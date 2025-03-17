@@ -61,7 +61,7 @@ function TicketsTable({ tickets }) {
           })}
         </tbody>
       </table>
-      {selectedTicket && <TicketModal ticket={selectedTicket} />}
+      <TicketModal ticket={selectedTicket} />
     </div>
   );
 }
