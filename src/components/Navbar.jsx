@@ -1,4 +1,11 @@
+import { useNavigate } from "react-router-dom"; 
+
 function Navbar() {
+    const navigate = useNavigate();
+    const handleLogout = () => {
+        localStorage.removeItem("authToken"); // Remove token
+        navigate("/login"); // Redirect to login
+    };
   return (
     <div className="navbar bg-base-100 shadow-sm">
         <div className="navbar-start">
@@ -131,7 +138,7 @@ function Navbar() {
                     </a>
                     </li>
                     <li><a>Settings</a></li>
-                    <li><a>Logout</a></li>
+                    <li><a onClick={handleLogout}>Logout</a></li>
                 </ul>
             </div>
         </div>

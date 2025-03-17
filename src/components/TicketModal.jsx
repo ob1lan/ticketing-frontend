@@ -25,9 +25,9 @@ function TicketModal({ ticket }) {
   const fetchComments = async (ticketId) => {
     setLoadingComments(true);
     setErrorComments(null);
-    const token = "61d36dcc9080061a680b34b242394257dd7e74ec"; // Dev token
-
+    
     try {
+      const token = localStorage.getItem("authToken");
       const response = await fetch(`http://127.0.0.1:8000/tickets/${ticketId}/comments/`, {
         headers: {
           "Content-Type": "application/json",
@@ -49,9 +49,9 @@ function TicketModal({ ticket }) {
   const fetchTimeEntries = async (ticketId) => {
     setLoadingTime(true);
     setErrorTime(null);
-    const token = "61d36dcc9080061a680b34b242394257dd7e74ec"; // Dev token
 
     try {
+      const token = localStorage.getItem("authToken");
       const response = await fetch(`http://127.0.0.1:8000/tickets/${ticketId}/time-entries/`, {
         headers: {
           "Content-Type": "application/json",
