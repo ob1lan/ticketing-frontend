@@ -20,11 +20,12 @@ function Login() {
         body: JSON.stringify({ email, password }),
       });
 
-      if (!response.ok) throw new Error("Invalid credentials");
-
       const data = await response.json();
-      localStorage.setItem("accessToken", data.access); // Store access token
-      localStorage.setItem("refreshToken", data.refresh); // Store refresh token
+
+      if (!data.access || !data.refresh) throw new Error("Access token missing!");
+
+      localStorage.setItem("accessToken", data.access);
+      localStorage.setItem("refreshToken", data.refresh);
 
       navigate("/dashboard", { replace: true });
     } catch (err) {

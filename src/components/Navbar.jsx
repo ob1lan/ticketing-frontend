@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 function Navbar() {
     const navigate = useNavigate();
     const handleLogout = () => {
-        localStorage.removeItem("authToken"); // Remove token
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
         navigate("/login"); // Redirect to login
     };
   return (
