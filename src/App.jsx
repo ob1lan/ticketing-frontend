@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
+import Navbar from "./components/Navbar";
 import TicketsTable from "./components/TicketsTable";
 import Footer from "./components/Footer";
-import ThemeController from "./components/ThemeController";
+import CounterCards from "./components/CounterCards";
 
 function App() {
   const [tickets, setTickets] = useState([]);
@@ -19,12 +20,14 @@ function App() {
   }, []);
 
   return (
-    <div>
-      <ThemeController />
-      <h1 className="text-2xl font-bold mb-4">My Tickets</h1>
+    <>
+      <Navbar />
+      <div className="divider">Stats</div>
+      <CounterCards tickets={tickets} />
+      <div className="divider"><h1 className="text-2xl font-bold mb-3">Tickets</h1></div>
       <TicketsTable tickets={tickets} />
       <Footer />
-    </div>
+    </>
   );
 }
 

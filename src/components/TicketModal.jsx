@@ -4,8 +4,11 @@ import PropTypes from "prop-types";
 function TicketModal({ ticket }) {
   const [activeTab, setActiveTab] = useState("details");
   const [comments, setComments] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [loadingComments, setLoadingComments] = useState(false);
+  const [errorComments, setErrorComments] = useState(null);
+  const [timeEntries, setTimeEntries] = useState([]);
+  const [loadingTime, setLoadingTime] = useState(false);
+  const [errorTime, setErrorTime] = useState(null);
 
   useEffect(() => {
     if (activeTab === "comments" && ticket) {
@@ -13,9 +16,15 @@ function TicketModal({ ticket }) {
     }
   }, [activeTab, ticket]);
 
+  useEffect(() => {
+    if (activeTab === "timespent" && ticket) {
+      fetchTimeEntries(ticket.id);
+    }
+  }, [activeTab, ticket]);
+
   const fetchComments = async (ticketId) => {
-    setLoading(true);
-    setError(null);
+    setLoadingComments(true);
+    setErrorComments(null);
     const token = "61d36dcc9080061a680b34b242394257dd7e74ec"; // Dev token
 
     try {
@@ -31,23 +40,49 @@ function TicketModal({ ticket }) {
       const data = await response.json();
       setComments(data.results);
     } catch (err) {
-      setError(err.message);
+      setErrorComments(err.message);
     } finally {
-      setLoading(false);
+      setLoadingComments(false);
+    }
+  };
+
+  const fetchTimeEntries = async (ticketId) => {
+    setLoadingTime(true);
+    setErrorTime(null);
+    const token = "61d36dcc9080061a680b34b242394257dd7e74ec"; // Dev token
+
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/tickets/${ticketId}/time-entries/`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Token ${token}`,
+        },
+      });
+
+      if (!response.ok) throw new Error("Failed to load time entries");
+
+      const data = await response.json();
+      setTimeEntries(data.results);
+    } catch (err) {
+      setErrorTime(err.message);
+    } finally {
+      setLoadingTime(false);
     }
   };
 
   const formatTimestamp = (timestamp) => {
     const date = new Date(timestamp);
     return date.toLocaleString("en-US", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false,
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
     });
   };
+
+  const totalTimeSpent = timeEntries.reduce((sum, entry) => sum + entry.minutes, 0);
 
   if (!ticket) return null;
 
@@ -55,16 +90,20 @@ function TicketModal({ ticket }) {
     <dialog id="ticket_modal" className="modal">
       <div className="modal-box w-11/12 max-w-5xl">
         <h3 className="font-bold text-lg"> 
-            <span className={`badge ${ticket.status === "open" ? "badge-error" :
-                    ticket.status === "pending" ? "badge-warning" :
-                    ticket.status === "in_progress" ? "badge-info" :
-                    ticket.status === "resolved" ? "badge-success" :
-                    "badge-neutral"
-                }`}>{ticket.status}
-            </span>{" "}
-                Ticket {ticket.unique_reference}
+          <span className={`badge ${ticket.status === "open" ? "badge-error" :
+            ticket.status === "pending" ? "badge-warning" :
+            ticket.status === "in_progress" ? "badge-info" :
+            ticket.status === "resolved" ? "badge-success" :
+            "badge-neutral"
+          }`}>
+            {ticket.status}
+          </span>{" "}
+          Ticket {ticket.unique_reference}
         </h3>
-        <p>Created {formatTimestamp(ticket.created_at)} - Updated {formatTimestamp(ticket.updated_at)}</p>
+        <h5>
+          <em>Created</em> {formatTimestamp(ticket.created_at)} - 
+          <em> Updated</em> {formatTimestamp(ticket.updated_at)}
+        </h5>
 
         {/* Tabs Navigation */}
         <div role="tablist" className="tabs tabs-border mt-4">
@@ -93,15 +132,17 @@ function TicketModal({ ticket }) {
 
         {/* Tab Content */}
         <div className="mt-4">
-            {activeTab === "details" && (
-                <textarea className="textarea w-full" placeholder="Ticket's description" disabled>{ticket.description}</textarea>
-            )}
+          {activeTab === "details" && (
+            <textarea className="textarea w-full" placeholder="Ticket's description" disabled>
+              {ticket.description}
+            </textarea>
+          )}
 
           {activeTab === "comments" && (
             <div className="h-60 overflow-y-auto p-2 rounded-lg">
-              {loading && <p>Loading comments...</p>}
-              {error && <p className="text-error">{error}</p>}
-              {comments.length === 0 && !loading && <p>No comments yet.</p>}
+              {loadingComments && <p>Loading comments...</p>}
+              {errorComments && <p className="text-error">{errorComments}</p>}
+              {comments.length === 0 && !loadingComments && <p>No comments yet.</p>}
               {comments.map((comment) => (
                 <div
                   key={comment.id}
@@ -126,8 +167,30 @@ function TicketModal({ ticket }) {
           )}
 
           {activeTab === "timespent" && (
-            <div>
-              <p className="italic opacity-75">Time spent details coming soon...</p>
+            <div className="h-60 overflow-y-auto p-2 rounded-lg">
+              {loadingTime && <p>Loading time entries...</p>}
+              {errorTime && <p className="text-error">{errorTime}</p>}
+              {!loadingTime && timeEntries.length === 0 && <p>No time entries recorded.</p>}
+
+              {timeEntries.length > 0 && (
+                <div className="mb-4">
+                  <h3 className="text-lg font-semibold">
+                    Total Time Spent: {totalTimeSpent} minutes
+                  </h3>
+                </div>
+              )}
+
+              {timeEntries.map((entry) => (
+                <div key={entry.id} className="card bg-base-200 p-3 mb-2 shadow-md">
+                  <div className="flex justify-between">
+                    <span className="font-bold">{entry.operator_name}</span>
+                    <span className="text-sm opacity-70">{formatTimestamp(entry.created_at)}</span>
+                  </div>
+                  <div className="text-md">
+                    ⏳ {entry.minutes} minutes logged
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </div>
@@ -145,12 +208,15 @@ function TicketModal({ ticket }) {
 
 TicketModal.propTypes = {
   ticket: PropTypes.shape({
-    id: PropTypes.string.isRequired, // UUID
+    id: PropTypes.string.isRequired,
     unique_reference: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
     priority: PropTypes.string.isRequired,
     status: PropTypes.string.isRequired,
+    description: PropTypes.string,
+    created_at: PropTypes.string.isRequired,
+    updated_at: PropTypes.string.isRequired,
   }),
 };
 
