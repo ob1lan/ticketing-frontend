@@ -1,18 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
+import TicketModal from "./TicketModal";
 
 function TicketsTable({ tickets }) {
-TicketsTable.propTypes = {
-  tickets: PropTypes.arrayOf(
-    PropTypes.shape({
-      unique_reference: PropTypes.string.isRequired,
-      title: PropTypes.string.isRequired,
-      type: PropTypes.string.isRequired,
-      priority: PropTypes.string.isRequired,
-      status: PropTypes.string.isRequired,
-    })
-  ).isRequired,
-};
+  const [selectedTicket, setSelectedTicket] = useState(null);
+
+  const handleOpenModal = (ticket) => {
+    setSelectedTicket(ticket);
+    document.getElementById("ticket_modal").showModal();
+  };
+
   return (
     <div className="overflow-x-auto">
       <table className="table table-zebra w-full">
@@ -57,15 +54,28 @@ TicketsTable.propTypes = {
                 </td>
                 <td className="text-center">{ticket.priority}</td>
                 <th>
-                  <button className="btn btn-ghost btn-xs" onClick={()=>document.getElementById('my_modal_4').showModal()}>details</button>
+                  <button className="btn btn-ghost btn-xs" onClick={() => handleOpenModal(ticket)}>details</button>
                 </th>
               </tr>
             );
           })}
         </tbody>
       </table>
+      {selectedTicket && <TicketModal ticket={selectedTicket} />}
     </div>
   );
 }
+
+TicketsTable.propTypes = {
+  tickets: PropTypes.arrayOf(
+    PropTypes.shape({
+      unique_reference: PropTypes.string.isRequired,
+      title: PropTypes.string.isRequired,
+      type: PropTypes.string.isRequired,
+      priority: PropTypes.string.isRequired,
+      status: PropTypes.string.isRequired,
+    })
+  ).isRequired,    
+};
 
 export default TicketsTable;
