@@ -1,36 +1,40 @@
 import React, { useEffect, useState } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import TicketsTable from "./components/TicketsTable";
 import Footer from "./components/Footer";
 import CounterCards from "./components/CounterCards";
-import Login from "./components/Login";
-import ProtectedRoute from "./middlewares/ProtectedRoute";
+import Login from "./pages/Login";
+import ProtectedRoute from "./middleware/ProtectedRoute";
 
 function Dashboard() {
   const [tickets, setTickets] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem("authToken");
-    if (!token) return;
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        navigate("/login", { replace: true }); // Redirect properly
+        return;
+      }
 
-    fetch("http://127.0.0.1:8000/tickets/", {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Token ${token}`,
-      },
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("Unauthorized");
-        return res.json();
+      fetch("http://127.0.0.1:8000/tickets/", {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Token ${token}`,
+        },
       })
-      .then((data) => setTickets(data.results || data))
-      .catch((err) => {
-        console.error(err);
-        localStorage.removeItem("authToken"); // Remove invalid token
-        window.location.href = "/login"; // Redirect to login
-      });
-  }, []);
+        .then((res) => {
+          if (!res.ok) throw new Error("Unauthorized");
+          return res.json();
+        })
+        .then((data) => setTickets(data.results || data))
+        .catch((err) => {
+          console.error(err);
+          localStorage.removeItem("authToken");
+          navigate("/login", { replace: true }); // Redirect on error
+        });
+    }, [navigate]);
 
   return (
     <>
@@ -58,7 +62,7 @@ function App() {
         </Route>
 
         {/* Default Route Redirects to Login */}
-        <Route path="*" element={<Login />} />
+        <Route path="*" element={localStorage.getItem("authToken") ? <Navigate to="/dashboard" /> : <Navigate to="/login" />} />
       </Routes>
     </Router>
   );
