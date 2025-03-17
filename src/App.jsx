@@ -12,9 +12,9 @@ function Dashboard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-      const token = localStorage.getItem("authToken");
+      const token = localStorage.getItem("accessToken");
       if (!token) {
-        navigate("/login", { replace: true }); // Redirect properly
+        navigate("/login", { replace: true });
         return;
       }
 
@@ -31,8 +31,8 @@ function Dashboard() {
         .then((data) => setTickets(data.results || data))
         .catch((err) => {
           console.error(err);
-          localStorage.removeItem("authToken");
-          navigate("/login", { replace: true }); // Redirect on error
+          localStorage.removeItem("accessToken");
+          navigate("/login", { replace: true });
         });
     }, [navigate]);
 
@@ -62,7 +62,7 @@ function App() {
         </Route>
 
         {/* Default Route Redirects to Login */}
-        <Route path="*" element={localStorage.getItem("authToken") ? <Navigate to="/dashboard" /> : <Navigate to="/login" />} />
+        <Route path="*" element={localStorage.getItem("accessToken") ? <Navigate to="/dashboard" /> : <Navigate to="/login" />} />
       </Routes>
     </Router>
   );
