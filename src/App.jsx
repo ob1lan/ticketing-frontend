@@ -14,7 +14,7 @@ function Dashboard() {
   useEffect(() => {
       const token = localStorage.getItem("accessToken");
       if (!token) {
-        navigate("/login", { replace: true });
+        setTimeout(() => navigate("/login", { replace: true }), 100);
         return;
       }
 
