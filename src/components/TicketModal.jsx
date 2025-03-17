@@ -27,7 +27,7 @@ function TicketModal({ ticket }) {
     setErrorComments(null);
     
     try {
-      const token = localStorage.getItem("authToken");
+      const token = localStorage.getItem("accessToken");
       const response = await fetch(`http://127.0.0.1:8000/tickets/${ticketId}/comments/`, {
         headers: {
           "Content-Type": "application/json",
@@ -51,11 +51,11 @@ function TicketModal({ ticket }) {
     setErrorTime(null);
 
     try {
-      const token = localStorage.getItem("authToken");
+      const token = localStorage.getItem("accessToken");
       const response = await fetch(`http://127.0.0.1:8000/tickets/${ticketId}/time-entries/`, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Token ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -146,18 +146,18 @@ function TicketModal({ ticket }) {
               {comments.map((comment) => (
                 <div
                   key={comment.id}
-                  className={`chat ${comment.author_name === "antoine" ? "chat-end" : "chat-start"}`}
+                  className={`chat ${comment.author_role === "admin" ? "chat-end" : "chat-start"}`}
                 >
                   <div className="chat-image avatar">
                     <div className="w-10 rounded-full">
                       <img
-                        alt={comment.author_name}
-                        src={`https://api.dicebear.com/7.x/identicon/svg?seed=${comment.author_name}`}
+                        alt={comment.author_fullName}
+                        src={`https://api.dicebear.com/7.x/identicon/svg?seed=${comment.author_fullName}`}
                       />
                     </div>
                   </div>
                   <div className="chat-header">
-                    {comment.author_name}
+                    {comment.author_fullName}
                     <time className="text-xs opacity-50 ml-2">{formatTimestamp(comment.created_at)}</time>
                   </div>
                   <div className="chat-bubble">{comment.message}</div>
