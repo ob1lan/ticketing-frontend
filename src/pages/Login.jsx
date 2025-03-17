@@ -37,48 +37,37 @@ function Login() {
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-base-200">
-      <div className="card w-96 bg-base-100 shadow-xl">
-        <div className="card-body">
-          <h2 className="card-title">Login</h2>
-          {error && <p className="text-error">{error}</p>}
+      <form onSubmit={handleLogin} className="w-96">
+        <fieldset className="fieldset bg-base-100 border border-base-300 p-6 rounded-box shadow-md">
+          <legend className="fieldset-legend text-lg font-bold">Login</legend>
 
-          <form onSubmit={handleLogin}>
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text">Email</span>
-              </label>
-              <input
-                type="email"
-                className="input input-bordered"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
+          {error && <p className="text-error text-sm mb-2">{error}</p>}
 
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text">Password</span>
-              </label>
-              <input
-                type="password"
-                className="input input-bordered"
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
+          <label className="fieldset-label">Email</label>
+          <input
+            type="email"
+            className="input input-bordered w-full mb-3"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
 
-            <div className="form-control mt-4">
-              <button type="submit" className="btn btn-primary" disabled={loading}>
-                {loading ? "Logging in..." : "Login"}
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
+          <label className="fieldset-label">Password</label>
+          <input
+            type="password"
+            className="input input-bordered w-full mb-3"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+
+          <button type="submit" className="btn btn-neutral w-full mt-4" disabled={loading}>
+            {loading ? "Logging in..." : "Login"}
+          </button>
+        </fieldset>
+      </form>
     </div>
   );
 }

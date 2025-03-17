@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
+import { Editor } from "@tinymce/tinymce-react";
 
 function TicketModal({ ticket }) {
   const [activeTab, setActiveTab] = useState("details");
@@ -9,6 +10,8 @@ function TicketModal({ ticket }) {
   const [timeEntries, setTimeEntries] = useState([]);
   const [loadingTime, setLoadingTime] = useState(false);
   const [errorTime, setErrorTime] = useState(null);
+
+  const editorRef = useRef(null);
 
   useEffect(() => {
     if (activeTab === "comments" && ticket) {
@@ -133,9 +136,25 @@ function TicketModal({ ticket }) {
         {/* Tab Content */}
         <div className="mt-4">
           {activeTab === "details" && (
-            <textarea className="textarea w-full" placeholder="Ticket's description" disabled>
-              {ticket.description}
-            </textarea>
+            <Editor
+              apiKey="exntuwohcc26tmyo74spy1dxscradb69wx8dn79stb9tsqbz"
+              onInit={(_evt, editor) => editorRef.current = editor}
+              initialValue={ticket.description}
+              init={{
+                height: 300,
+                menubar: false,
+                plugins: [
+                  'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+                  'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+                  'insertdatetime', 'media', 'table', 'code', 'wordcount'
+                ],
+                toolbar: 'undo redo | blocks | ' +
+                  'bold italic forecolor | alignleft aligncenter ' +
+                  'alignright alignjustify | bullist numlist outdent indent | ' +
+                  'removeformat | help',
+                content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+              }}
+            />
           )}
 
           {activeTab === "comments" && (
