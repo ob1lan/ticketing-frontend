@@ -22,7 +22,7 @@ function Login() {
 
       const data = await response.json();
 
-      if (!data.access || !data.refresh) throw new Error("Access token missing!");
+      if (!data.access || !data.refresh) throw new Error("Login failed!");
 
       localStorage.setItem("accessToken", data.access);
       localStorage.setItem("refreshToken", data.refresh);
