@@ -4,11 +4,12 @@ import Navbar from "../components/Navbar";
 import TicketsTable from "../components/TicketsTable";
 import Footer from "../components/Footer";
 import CounterCards from "../components/CounterCards";
-import NewTicketModal from "../components/NewTicketModal";
+import CreateTicketModal from "../components/CreateTicketModal";
 
 
 function Dashboard() {
     const [tickets, setTickets] = useState([]);
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const navigate = useNavigate();
   
     useEffect(() => {
@@ -37,10 +38,18 @@ function Dashboard() {
       }, [navigate]);
   
 
-    const showCreateModal = () => {
-        const modal = document.getElementById("createTicketModal");
-        modal.classList.add("show-modal");
-    };
+      const handleOpenModal = () => {
+        setIsCreateModalOpen(true);
+      };
+    
+      const handleCloseModal = () => {
+        setIsCreateModalOpen(false);
+      };
+    
+      const handleTicketCreated = (newTicket) => {
+        // Optionally, update the tickets list with the new ticket
+        setTickets([newTicket, ...tickets]);
+      };
 
     return (
       <>
@@ -48,7 +57,7 @@ function Dashboard() {
         <div className="divider">Stats</div>
         <CounterCards tickets={tickets} />
         <div className="divider">
-            <button className="btn btn-soft btn-success" onClick={showCreateModal}>New Ticket</button>
+            <button className="btn btn-soft btn-success" onClick={handleOpenModal}>New Ticket</button>
         </div>
         <TicketsTable tickets={tickets} />
         <div className="join pb-2">
@@ -56,7 +65,11 @@ function Dashboard() {
             <button className="join-item btn">Page 22</button>
             <button className="join-item btn">»</button>
         </div>
-        <NewTicketModal />
+        <CreateTicketModal
+          isOpen={isCreateModalOpen}
+          onClose={handleCloseModal}
+          onTicketCreated={handleTicketCreated}
+        />
         <Footer />
       </>
     );

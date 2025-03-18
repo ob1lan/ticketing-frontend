@@ -1,11 +1,27 @@
-import { useNavigate } from "react-router-dom"; 
+import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { jwtDecode } from "jwt-decode";
 
 function Navbar() {
     const navigate = useNavigate();
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        const token = localStorage.getItem("accessToken");
+        if (token) {
+            try {
+                const decoded = jwtDecode(token);
+                setUser({ username: decoded.username, role: decoded.role });
+            } catch (error) {
+                console.error("Failed to decode JWT:", error);
+            }
+        }
+    }, []);
+
     const handleLogout = () => {
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
-        navigate("/login"); // Redirect to login
+        navigate("/login");
     };
   return (
     <div className="navbar bg-base-100 shadow-sm">
@@ -24,7 +40,7 @@ function Navbar() {
             </div>
         </div>
         <div className="navbar-center">
-            <a className="btn btn-ghost text-xl">Ticketing System</a>
+            <a className="btn btn-ghost text-xl" href="/">Ticketing System</a>
         </div>
         <div className="navbar-end">
         <div className="dropdown">
@@ -133,9 +149,12 @@ function Navbar() {
                 <ul
                     tabIndex={0}
                     className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
+                {user && (
+                    <span className="text-sm opacity-75">Connected as <strong>{user.username}</strong></span>
+                )}
                     <li>
-                    <a className="justify-between">
-                        Profile
+                      <a className="justify-between">
+                          Profile
                     </a>
                     </li>
                     <li><a>Settings</a></li>
