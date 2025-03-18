@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import { Editor } from "@tinymce/tinymce-react";
+import DOMPurify from "dompurify";
 
 function TicketModal({ ticket }) {
   const [activeTab, setActiveTab] = useState("details");
@@ -11,7 +12,13 @@ function TicketModal({ ticket }) {
   const [loadingTime, setLoadingTime] = useState(false);
   const [errorTime, setErrorTime] = useState(null);
 
+  // New state for posting a comment
+  const [newComment, setNewComment] = useState("");
+  const [isSubmittingComment, setIsSubmittingComment] = useState(false);
+  const [errorPostingComment, setErrorPostingComment] = useState(null);
+
   const editorRef = useRef(null);
+  const commentEditorRef = useRef(null);
 
   useEffect(() => {
     if (activeTab === "comments" && ticket) {
@@ -28,7 +35,7 @@ function TicketModal({ ticket }) {
   const fetchComments = async (ticketId) => {
     setLoadingComments(true);
     setErrorComments(null);
-    
+
     try {
       const token = localStorage.getItem("accessToken");
       const response = await fetch(`http://127.0.0.1:8000/tickets/${ticketId}/comments/`, {
@@ -87,25 +94,58 @@ function TicketModal({ ticket }) {
 
   const totalTimeSpent = timeEntries.reduce((sum, entry) => sum + entry.minutes, 0);
 
+  const handleSubmitComment = async () => {
+    if (!newComment.trim()) return;
+    setIsSubmittingComment(true);
+    setErrorPostingComment(null);
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await fetch(`http://127.0.0.1:8000/tickets/${ticket.id}/comments/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ message: newComment }),
+      });
+      if (!response.ok) throw new Error("Failed to post comment");
+      // Refresh the comment list after a successful post
+      fetchComments(ticket.id);
+      // Clear the editor content
+      setNewComment("");
+    } catch (err) {
+      setErrorPostingComment(err.message);
+    } finally {
+      setIsSubmittingComment(false);
+    }
+  };
+
   if (!ticket) return null;
 
   return (
     <dialog id="ticket_modal" className="modal">
       <div className="modal-box w-11/12 max-w-5xl">
-        <h3 className="font-bold text-lg"> 
-          <span className={`badge ${ticket.status === "open" ? "badge-error" :
-            ticket.status === "pending" ? "badge-warning" :
-            ticket.status === "in_progress" ? "badge-info" :
-            ticket.status === "resolved" ? "badge-success" :
-            "badge-neutral"
-          }`}>
+        <h3 className="font-bold text-lg">
+          <span
+            className={`badge ${
+              ticket.status === "open"
+                ? "badge-error"
+                : ticket.status === "pending"
+                ? "badge-warning"
+                : ticket.status === "in_progress"
+                ? "badge-info"
+                : ticket.status === "resolved"
+                ? "badge-success"
+                : "badge-neutral"
+            }`}
+          >
             {ticket.status}
           </span>{" "}
           Ticket {ticket.unique_reference}
         </h3>
         <h5>
-          <em>Created</em> {formatTimestamp(ticket.created_at)} - 
-          <em> Updated</em> {formatTimestamp(ticket.updated_at)}
+          <em>Created</em> {formatTimestamp(ticket.created_at)} -{" "}
+          <em>Updated</em> {formatTimestamp(ticket.updated_at)}
         </h5>
 
         {/* Tabs Navigation */}
@@ -138,58 +178,117 @@ function TicketModal({ ticket }) {
           {activeTab === "details" && (
             <Editor
               apiKey="exntuwohcc26tmyo74spy1dxscradb69wx8dn79stb9tsqbz"
-              onInit={(_evt, editor) => editorRef.current = editor}
+              onInit={(_evt, editor) => (editorRef.current = editor)}
               initialValue={ticket.description}
               init={{
                 height: 300,
                 menubar: false,
                 plugins: [
-                  'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
-                  'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-                  'insertdatetime', 'media', 'table', 'code', 'wordcount'
+                  "advlist",
+                  "autolink",
+                  "lists",
+                  "link",
+                  "image",
+                  "charmap",
+                  "preview",
+                  "anchor",
+                  "searchreplace",
+                  "visualblocks",
+                  "code",
+                  "fullscreen",
+                  "insertdatetime",
+                  "media",
+                  "table",
+                  "code",
+                  "wordcount",
                 ],
-                toolbar: 'undo redo | blocks | ' +
-                  'bold italic forecolor | alignleft aligncenter ' +
-                  'alignright alignjustify | bullist numlist outdent indent | ' +
-                  'removeformat | help',
-                content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+                toolbar:
+                  "undo redo | blocks | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help",
+                content_style:
+                  "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
               }}
             />
           )}
 
           {activeTab === "comments" && (
-            <div className="h-60 overflow-y-auto p-2 rounded-lg">
-              {loadingComments && <p>Loading comments...</p>}
-              {errorComments && <p className="text-error">{errorComments}</p>}
-              {comments.length === 0 && !loadingComments && <p>No comments yet.</p>}
-              {comments.map((comment) => (
-                <div
-                  key={comment.id}
-                  className={`chat ${comment.author_role === "admin" ? "chat-end" : "chat-start"}`}
-                >
-                  <div className="chat-image avatar">
-                    <div className="w-10 rounded-full">
-                      <img
-                        alt={comment.author_fullName}
-                        src={`https://api.dicebear.com/7.x/identicon/svg?seed=${comment.author_fullName}`}
-                      />
+            <>
+              <div className="h-60 overflow-y-auto p-2 rounded-lg">
+                {loadingComments && <p>Loading comments...</p>}
+                {errorComments && <p className="text-error">{errorComments}</p>}
+                {comments.length === 0 && !loadingComments && <p>No comments yet.</p>}
+                {comments.map((comment) => (
+                  <div
+                    key={comment.id}
+                    className={`chat ${
+                      comment.author_role === "admin" ? "chat-end" : "chat-start"
+                    }`}
+                  >
+                    <div className="chat-image avatar">
+                      <div className="w-10 rounded-full">
+                        <img
+                          alt={comment.author_fullName}
+                          src={`https://api.dicebear.com/7.x/identicon/svg?seed=${comment.author_fullName}`}
+                        />
+                      </div>
                     </div>
+                    <div className="chat-header">
+                      {comment.author_fullName}
+                      <time className="text-xs opacity-50 ml-2">
+                        {formatTimestamp(comment.created_at)}
+                      </time>
+                    </div>
+                    <div
+                      className="chat-bubble"
+                      dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(comment.message) }}
+                    />
                   </div>
-                  <div className="chat-header">
-                    {comment.author_fullName}
-                    <time className="text-xs opacity-50 ml-2">{formatTimestamp(comment.created_at)}</time>
-                  </div>
-                  <div className="chat-bubble">{comment.message}</div>
+                ))}
+              </div>
+              {/* New Comment Editor Section */}
+              <div className="mt-4">
+                <h4 className="text-lg font-medium mb-2">Add a Comment</h4>
+                <Editor
+                  apiKey="exntuwohcc26tmyo74spy1dxscradb69wx8dn79stb9tsqbz"
+                  onInit={(_evt, editor) => (commentEditorRef.current = editor)}
+                  value={newComment}
+                  init={{
+                    height: 150,
+                    menubar: false,
+                    plugins: [
+                      "advlist autolink lists link image charmap preview anchor",
+                      "searchreplace visualblocks code fullscreen",
+                      "insertdatetime media table paste code help wordcount",
+                    ],
+                    toolbar:
+                      "undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help",
+                    content_style:
+                      "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
+                  }}
+                  onEditorChange={(content) => setNewComment(content)}
+                />
+                <div className="mt-3">
+                  <button
+                    onClick={handleSubmitComment}
+                    disabled={isSubmittingComment}
+                    className="btn btn-primary"
+                  >
+                    {isSubmittingComment ? "Posting..." : "Post Comment"}
+                  </button>
+                  {errorPostingComment && (
+                    <p className="text-error mt-2">{errorPostingComment}</p>
+                  )}
                 </div>
-              ))}
-            </div>
+              </div>
+            </>
           )}
 
           {activeTab === "timespent" && (
             <div className="h-60 overflow-y-auto p-2 rounded-lg">
               {loadingTime && <p>Loading time entries...</p>}
               {errorTime && <p className="text-error">{errorTime}</p>}
-              {!loadingTime && timeEntries.length === 0 && <p>No time entries recorded.</p>}
+              {!loadingTime && timeEntries.length === 0 && (
+                <p>No time entries recorded.</p>
+              )}
 
               {timeEntries.length > 0 && (
                 <div className="mb-4">
@@ -200,14 +299,17 @@ function TicketModal({ ticket }) {
               )}
 
               {timeEntries.map((entry) => (
-                <div key={entry.id} className="card bg-base-200 p-3 mb-2 shadow-md">
+                <div
+                  key={entry.id}
+                  className="card bg-base-200 p-3 mb-2 shadow-md"
+                >
                   <div className="flex justify-between">
-                    <span className="font-bold">{entry.operator_name}</span>
-                    <span className="text-sm opacity-70">{formatTimestamp(entry.created_at)}</span>
+                    <span className="font-bold">{entry.operator_fullname}</span>
+                    <span className="text-sm opacity-70">
+                      {formatTimestamp(entry.created_at)}
+                    </span>
                   </div>
-                  <div className="text-md">
-                    ⏳ {entry.minutes} minutes logged
-                  </div>
+                  <div className="text-md">⏳ {entry.minutes} minutes logged</div>
                 </div>
               ))}
             </div>

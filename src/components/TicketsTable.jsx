@@ -17,7 +17,9 @@ function TicketsTable({ tickets }) {
           <tr>
             <th>Reference</th>
             <th>Title</th>
+            <th className="text-center">Requester</th>
             <th className="text-center">Priority</th>
+            <th className="text-center">Assignee</th>
             <th></th>
           </tr>
         </thead>
@@ -52,7 +54,9 @@ function TicketsTable({ tickets }) {
                   <br />
                   <span className="badge badge-ghost badge-sm">{ticket.type}</span>
                 </td>
+                <td className="text-center">{ticket.created_by_fullname}</td>
                 <td className="text-center">{ticket.priority}</td>
+                <td className="text-center">{ticket.assignee_fullname}</td>
                 <th>
                   <button className="btn btn-ghost btn-xs" onClick={() => handleOpenModal(ticket)}>details</button>
                 </th>
