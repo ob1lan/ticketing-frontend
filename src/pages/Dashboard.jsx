@@ -41,9 +41,14 @@ function Dashboard() {
         <div className="divider">Stats</div>
         <CounterCards tickets={tickets} />
         <div className="divider">
-          <h1 className="text-2xl font-bold mb-3">Tickets</h1>
+            <button className="btn btn-soft btn-success">New Ticket</button>
         </div>
         <TicketsTable tickets={tickets} />
+        <div className="join pb-2">
+            <button className="join-item btn">«</button>
+            <button className="join-item btn">Page 22</button>
+            <button className="join-item btn">»</button>
+        </div>
         <Footer />
       </>
     );

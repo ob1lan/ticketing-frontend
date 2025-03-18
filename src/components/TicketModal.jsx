@@ -124,7 +124,7 @@ function TicketModal({ ticket }) {
 
   return (
     <dialog id="ticket_modal" className="modal">
-      <div className="modal-box w-11/12 max-w-5xl">
+      <div className="modal-box container">
         <h3 className="font-bold text-lg">
           <span
             className={`badge ${
@@ -238,9 +238,9 @@ function TicketModal({ ticket }) {
                       </time>
                     </div>
                     <div
-                      className="chat-bubble"
-                      dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(comment.message) }}
-                    />
+                        className="chat-bubble"
+                        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(comment.message) }}
+                      />
                   </div>
                 ))}
               </div>

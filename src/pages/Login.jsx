@@ -43,8 +43,9 @@ function Login() {
 
           {error && <p className="text-error text-sm mb-2">{error}</p>}
 
-          <label className="fieldset-label">Email</label>
+          <label htmlFor="email" className="fieldset-label">Email</label>
           <input
+            id="email"
             type="email"
             className="input input-bordered w-full mb-3"
             placeholder="Email"
@@ -53,8 +54,9 @@ function Login() {
             required
           />
 
-          <label className="fieldset-label">Password</label>
+          <label htmlFor="password" className="fieldset-label">Password</label>
           <input
+            id="password"
             type="password"
             className="input input-bordered w-full mb-3"
             placeholder="Password"
@@ -62,7 +64,6 @@ function Login() {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-
           <button type="submit" className="btn btn-neutral w-full mt-4" disabled={loading}>
             {loading ? "Logging in..." : "Login"}
           </button>
