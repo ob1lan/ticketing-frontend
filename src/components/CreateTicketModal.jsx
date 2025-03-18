@@ -10,10 +10,10 @@ const CreateTicketModal = ({ isOpen, onClose, onTicketCreated, user }) => {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (user.role === "admin") {
+    if (user?.role === "admin") { 
       fetchCompanies();
     }
-  }, [user.role]);
+  }, [user]);
 
   const fetchCompanies = async () => {
     try {
