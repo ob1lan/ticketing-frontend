@@ -135,7 +135,20 @@ function Navbar({ user } ) {
                     tabIndex={0}
                     className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
                 {user && (
-                    <span className="text-sm opacity-75">Connected as <strong>{user.username}</strong></span>
+                    <>
+                        <span className="text-sm opacity-75 block mb-1">
+                            Connected as <strong>{user.username}</strong>
+                        </span>
+
+                        {/* Single evaluation for user.role */}
+                        <span
+                            className={`badge badge-dash ${
+                                user.role === "admin" ? "badge-warning" : "badge-primary"
+                            } mx-auto mb-1`}
+                        >
+                            {user.role === "admin" ? "Admin" : "Customer"}
+                        </span>
+                    </>
                 )}
                     <li>
                       <a className="justify-between">
