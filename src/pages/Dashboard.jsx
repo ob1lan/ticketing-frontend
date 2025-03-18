@@ -5,12 +5,27 @@ import TicketsTable from "../components/TicketsTable";
 import Footer from "../components/Footer";
 import CounterCards from "../components/CounterCards";
 import CreateTicketModal from "../components/CreateTicketModal";
-
+import { jwtDecode } from "jwt-decode";
 
 function Dashboard() {
     const [tickets, setTickets] = useState([]);
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const navigate = useNavigate();
+
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        const token = localStorage.getItem("accessToken");
+        if (token) {
+            try {
+                const decoded = jwtDecode(token);
+                setUser({ username: decoded.username, role: decoded.role });
+                console.log("User:", decoded);
+            } catch (error) {
+                console.error("Failed to decode JWT:", error);
+            }
+        }
+    }, []);
   
     useEffect(() => {
         const token = localStorage.getItem("accessToken");
@@ -53,7 +68,7 @@ function Dashboard() {
 
     return (
       <>
-        <Navbar />
+        <Navbar user={user} />
         <div className="divider">Stats</div>
         <CounterCards tickets={tickets} />
         <div className="divider">
@@ -69,6 +84,7 @@ function Dashboard() {
           isOpen={isCreateModalOpen}
           onClose={handleCloseModal}
           onTicketCreated={handleTicketCreated}
+          user={user}
         />
         <Footer />
       </>

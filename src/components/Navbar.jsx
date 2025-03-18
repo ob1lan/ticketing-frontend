@@ -1,22 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { jwtDecode } from "jwt-decode";
 
-function Navbar() {
+function Navbar({ user } ) {
     const navigate = useNavigate();
-    const [user, setUser] = useState(null);
-
-    useEffect(() => {
-        const token = localStorage.getItem("accessToken");
-        if (token) {
-            try {
-                const decoded = jwtDecode(token);
-                setUser({ username: decoded.username, role: decoded.role });
-            } catch (error) {
-                console.error("Failed to decode JWT:", error);
-            }
-        }
-    }, []);
 
     const handleLogout = () => {
         localStorage.removeItem("accessToken");
