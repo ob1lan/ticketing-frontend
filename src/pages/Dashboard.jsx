@@ -4,6 +4,7 @@ import Navbar from "../components/Navbar";
 import TicketsTable from "../components/TicketsTable";
 import Footer from "../components/Footer";
 import CounterCards from "../components/CounterCards";
+import NewTicketModal from "../components/NewTicketModal";
 
 
 function Dashboard() {
@@ -35,13 +36,19 @@ function Dashboard() {
           });
       }, [navigate]);
   
+
+    const showCreateModal = () => {
+        const modal = document.getElementById("createTicketModal");
+        modal.classList.add("show-modal");
+    };
+
     return (
       <>
         <Navbar />
         <div className="divider">Stats</div>
         <CounterCards tickets={tickets} />
         <div className="divider">
-            <button className="btn btn-soft btn-success">New Ticket</button>
+            <button className="btn btn-soft btn-success" onClick={showCreateModal}>New Ticket</button>
         </div>
         <TicketsTable tickets={tickets} />
         <div className="join pb-2">
@@ -49,6 +56,7 @@ function Dashboard() {
             <button className="join-item btn">Page 22</button>
             <button className="join-item btn">»</button>
         </div>
+        <NewTicketModal />
         <Footer />
       </>
     );
