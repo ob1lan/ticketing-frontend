@@ -8,6 +8,10 @@ function Navbar({ user } ) {
         localStorage.removeItem("refreshToken");
         navigate("/login");
     };
+
+    const handleOpenProfileModal = () => {
+        // Open profile modal
+    };
   return (
     <div className="navbar bg-base-100 shadow-sm">
         <div className="navbar-start">
@@ -151,7 +155,7 @@ function Navbar({ user } ) {
                     </>
                 )}
                     <li>
-                      <a className="justify-between">
+                      <a className="justify-between" onClick={handleOpenProfileModal}>
                           Profile
                     </a>
                     </li>

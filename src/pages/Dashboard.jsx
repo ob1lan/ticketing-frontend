@@ -5,6 +5,7 @@ import TicketsTable from "../components/TicketsTable";
 import Footer from "../components/Footer";
 import CounterCards from "../components/CounterCards";
 import CreateTicketModal from "../components/CreateTicketModal";
+import ProfileModal from "../components/ProfileModal";
 import { jwtDecode } from "jwt-decode";
 
 function Dashboard() {
@@ -75,7 +76,7 @@ function Dashboard() {
             <button className="btn btn-soft btn-success" onClick={handleOpenModal}>New Ticket</button>
         </div>
         <TicketsTable tickets={tickets} />
-        <div className="join pb-2">
+        <div className="join p-2">
             <button className="join-item btn">«</button>
             <button className="join-item btn">Page 22</button>
             <button className="join-item btn">»</button>
