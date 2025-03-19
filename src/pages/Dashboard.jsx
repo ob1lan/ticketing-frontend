@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import ProfileModal from "../components/ProfileModal";
 import TicketsTable from "../components/TicketsTable";
 import Footer from "../components/Footer";
 import CounterCards from "../components/CounterCards";
 import CreateTicketModal from "../components/CreateTicketModal";
-import ProfileModal from "../components/ProfileModal";
 import { jwtDecode } from "jwt-decode";
 
 function Dashboard() {
     const [tickets, setTickets] = useState([]);
+    const [isProfileOpen, setIsProfileOpen] = useState(false);
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const navigate = useNavigate();
 
@@ -21,7 +22,6 @@ function Dashboard() {
             try {
                 const decoded = jwtDecode(token);
                 setUser({ username: decoded.username, role: decoded.role });
-                console.log("User:", decoded);
             } catch (error) {
                 console.error("Failed to decode JWT:", error);
             }
@@ -69,7 +69,7 @@ function Dashboard() {
 
     return (
       <>
-        <Navbar user={user} />
+        <Navbar onOpenProfile={() => setIsProfileOpen(true)} user={user} />
         <div className="divider">Stats</div>
         <CounterCards tickets={tickets} />
         <div className="divider">
@@ -88,6 +88,7 @@ function Dashboard() {
           user={user}
         />
         <Footer />
+        {isProfileOpen && <ProfileModal isOpen={isProfileOpen} onClose={() => setIsProfileOpen(false)} user={user} />}
       </>
     );
   }
