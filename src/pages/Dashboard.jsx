@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import ProfileModal from "../components/ProfileModal";
+import SettingsModal from "../components/SettingsModal";
 import TicketsTable from "../components/TicketsTable";
 import Footer from "../components/Footer";
 import CounterCards from "../components/CounterCards";
@@ -11,6 +12,7 @@ import { jwtDecode } from "jwt-decode";
 function Dashboard() {
     const [tickets, setTickets] = useState([]);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
+    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const navigate = useNavigate();
 
@@ -92,7 +94,7 @@ function Dashboard() {
 
     return (
       <>
-        <Navbar onOpenProfile={() => setIsProfileOpen(true)} profile={profile} user={user} />
+        <Navbar onOpenProfile={() => setIsProfileOpen(true)} onOpenSettings={() => setIsSettingsOpen(true)} profile={profile} user={user} />
         <div className="divider">Stats</div>
         <CounterCards tickets={tickets} />
         <div className="divider">
@@ -112,6 +114,7 @@ function Dashboard() {
         />
         <Footer />
         {isProfileOpen && <ProfileModal isOpen={isProfileOpen} onClose={() => setIsProfileOpen(false)} user={user} />}
+        {isSettingsOpen && <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />}    
       </>
     );
   }

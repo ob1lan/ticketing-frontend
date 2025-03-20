@@ -73,6 +73,7 @@ const ProfileModal = ({ user, isOpen, onClose }) => {
             const updatedData = await res.json();
             setProfile(updatedData);
             setSuccess("Profile updated successfully!");
+            setTimeout(onClose, 2000);
         } catch (err) {
             console.error("Error updating profile:", err);
             setError("Failed to update profile. Please try again.");

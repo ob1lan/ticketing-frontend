@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
-function Navbar({user, profile, onOpenProfile } ) {
+function Navbar({user, profile, onOpenProfile, onOpenSettings } ) {
     const navigate = useNavigate();
 
     const handleLogout = () => {
@@ -160,7 +160,7 @@ function Navbar({user, profile, onOpenProfile } ) {
                           Profile
                     </a>
                     </li>
-                    <li><a>Settings</a></li>
+                    <li><a onClick={onOpenSettings}>Settings</a></li>
                     <li><a onClick={handleLogout}>Logout</a></li>
                 </ul>
             </div>
