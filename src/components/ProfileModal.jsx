@@ -85,6 +85,9 @@ const ProfileModal = ({ user, isOpen, onClose }) => {
 
     return (
         <dialog id="profile_modal" className="modal modal-open">
+            <form method="dialog" className="modal-backdrop" onClick={onClose}>
+                <button>close</button>
+            </form>
             <div className="modal-box w-11/12 max-w-3xl">
                 <fieldset className="fieldset bg-base-100 border border-base-300 p-6 rounded-box shadow-md">
                     <legend className="fieldset-legend text-lg font-bold">My Profile</legend>
@@ -192,9 +195,6 @@ const ProfileModal = ({ user, isOpen, onClose }) => {
                         </div>
                     </form>
                 </fieldset>
-                <form method="dialog" className="modal-backdrop">
-                        <button>close</button>
-                </form>
             </div>
         </dialog>
     );
