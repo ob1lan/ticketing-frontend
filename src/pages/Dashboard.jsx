@@ -15,6 +15,30 @@ function Dashboard() {
     const navigate = useNavigate();
 
     const [user, setUser] = useState(null);
+    const [profile, setProfile] = useState({});
+    
+        useEffect(() => {
+            fetchProfile();
+        }, []);
+    
+        const fetchProfile = async () => {
+            try {
+            const token = localStorage.getItem("accessToken");
+            const res = await fetch("http://127.0.0.1:8000/accounts/profile/", {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+    
+            if (!res.ok) throw new Error("Failed to fetch profile");
+    
+            const data = await res.json();
+            setProfile(data);
+            } catch (err) {
+            console.error("Error fetching profile:", err);
+            }
+        };
 
     useEffect(() => {
         const token = localStorage.getItem("accessToken");
@@ -53,7 +77,6 @@ function Dashboard() {
           });
       }, [navigate]);
   
-
       const handleOpenModal = () => {
         setIsCreateModalOpen(true);
       };
@@ -69,7 +92,7 @@ function Dashboard() {
 
     return (
       <>
-        <Navbar onOpenProfile={() => setIsProfileOpen(true)} user={user} />
+        <Navbar onOpenProfile={() => setIsProfileOpen(true)} profile={profile} user={user} />
         <div className="divider">Stats</div>
         <CounterCards tickets={tickets} />
         <div className="divider">

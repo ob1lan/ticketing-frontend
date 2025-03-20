@@ -223,11 +223,11 @@ function TicketModal({ ticket }) {
                       comment.author_role === "admin" ? "chat-end" : "chat-start"
                     }`}
                   >
-                    <div className="chat-image avatar">
-                      <div className="w-10 rounded-full">
+                    <div className="chat-image avatar avatar-rounded">
+                      <div className={comment?.author_role === "admin" ? "ring-warning ring-offset-base-100 w-10 rounded-full ring ring-offset-2" :"ring-primary ring-offset-base-100 w-10 rounded-full ring ring-offset-2"} >
                         <img
                           alt={comment.author_fullName}
-                          src={`https://api.dicebear.com/7.x/identicon/svg?seed=${comment.author_fullName}`}
+                          src={comment?.author_avatar ? comment?.author_avatar : `https://api.dicebear.com/7.x/identicon/svg?seed=username`}
                         />
                       </div>
                     </div>

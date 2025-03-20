@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
-function Navbar({ user, onOpenProfile } ) {
+function Navbar({user, profile, onOpenProfile } ) {
     const navigate = useNavigate();
 
     const handleLogout = () => {
@@ -125,12 +125,16 @@ function Navbar({ user, onOpenProfile } ) {
   </ul>
 </div>
             <div className="dropdown dropdown-end">
-                <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
-                    <div className="w-10 rounded-full">
-                    <img
+                <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar avatar-online">
+                {user && (
+                    <div className={user?.role === "admin" ? "ring-warning ring-offset-base-100 w-10 rounded-full ring ring-offset-2" :"ring-primary ring-offset-base-100 w-10 rounded-full ring ring-offset-2"} >
+                
+                      <img
                         alt="Avatar"
-                        src="https://api.dicebear.com/7.x/identicon/svg?seed=username" />
+                        src={profile?.avatar ? profile?.avatar : `https://api.dicebear.com/7.x/identicon/svg?seed=username`}>
+                      </img>
                     </div>
+                  )}
                 </div>
                 <ul
                     tabIndex={0}
@@ -144,7 +148,7 @@ function Navbar({ user, onOpenProfile } ) {
                         {/* Single evaluation for user.role */}
                         <span
                             className={`badge badge-dash ${
-                                user.role === "admin" ? "badge-warning" : "badge-primary"
+                              user.role === "admin" ? "badge-warning" : "badge-primary"
                             } mx-auto mb-1`}
                         >
                             {user.role === "admin" ? "Admin" : "Customer"}
