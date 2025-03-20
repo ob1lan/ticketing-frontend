@@ -57,7 +57,11 @@ const apiRequest = async (
 // API Functions using `apiRequest`
 
 export const fetchProfile = () => apiRequest("/accounts/profile/");
-export const fetchTickets = () => apiRequest("/tickets/");
+export const fetchTickets = (pageOrUrl = 1) => {
+  const endpoint =
+    typeof pageOrUrl === "string" ? pageOrUrl : `/tickets/?page=${pageOrUrl}`;
+  return apiRequest(endpoint);
+};
 export const fetchCompanies = () => apiRequest("/companies/");
 export const createTicket = (ticketData) =>
   apiRequest("/tickets/", "POST", ticketData);

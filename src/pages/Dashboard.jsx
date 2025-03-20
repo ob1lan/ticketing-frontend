@@ -16,9 +16,14 @@ function Dashboard() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const navigate = useNavigate();
-
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState({});
+
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [nextPage, setNextPage] = useState(null);
+  const [prevPage, setPrevPage] = useState(null);
 
   useEffect(() => {
     fetchProfile().then(data => setProfile(data));
@@ -38,10 +43,26 @@ function Dashboard() {
   }, []);
 
   useEffect(() => {
-    fetchTickets()
-      .then(data => setTickets(data.results || data))
-      .catch(() => navigate("/login", { replace: true }));
-  }, [navigate]);
+    loadTickets(currentPage);
+  }, [currentPage]);
+
+  const loadTickets = async (page) => {
+    try {
+      const data = await fetchTickets(page);
+      setTickets(data.results);
+      setTotalPages(Math.ceil(data.count / 5));
+      setNextPage(data.next);
+      setPrevPage(data.previous);
+    } catch (error) {
+      navigate("/login", { replace: true });
+    }
+  };
+
+  const handlePageChange = (newPage) => {
+    if (newPage > 0 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+    }
+  };
 
   const handleOpenModal = () => {
     setIsCreateModalOpen(true);
@@ -52,7 +73,6 @@ function Dashboard() {
   };
 
   const handleTicketCreated = (newTicket) => {
-    // Optionally, update the tickets list with the new ticket
     setTickets([newTicket, ...tickets]);
   };
 
@@ -60,15 +80,28 @@ function Dashboard() {
     <>
       <Navbar onOpenProfile={() => setIsProfileOpen(true)} onOpenSettings={() => setIsSettingsOpen(true)} profile={profile} user={user} />
       <div className="divider">Stats</div>
-      <CounterCards tickets={tickets} />
+      <CounterCards />
       <div className="divider">
         <button className="btn btn-soft btn-success" onClick={handleOpenModal}>New Ticket</button>
       </div>
       <TicketsTable tickets={tickets} />
+      {/* Pagination Controls */}
       <div className="join p-2">
-        <button className="join-item btn">«</button>
-        <button className="join-item btn">Page 22</button>
-        <button className="join-item btn">»</button>
+        <button
+          className="join-item btn"
+          disabled={!prevPage}
+          onClick={() => handlePageChange(currentPage - 1)}
+        >
+          «
+        </button>
+        <span className="join-item btn">Page {currentPage} of {totalPages}</span>
+        <button
+          className="join-item btn"
+          disabled={!nextPage}
+          onClick={() => handlePageChange(currentPage + 1)}
+        >
+          »
+        </button>
       </div>
       <CreateTicketModal
         isOpen={isCreateModalOpen}
