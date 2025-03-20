@@ -73,7 +73,6 @@ const ProfileModal = ({ user, isOpen, onClose }) => {
             const updatedData = await res.json();
             setProfile(updatedData);
             setSuccess("Profile updated successfully!");
-            setTimeout(onClose, 1500);
         } catch (err) {
             console.error("Error updating profile:", err);
             setError("Failed to update profile. Please try again.");
@@ -170,12 +169,32 @@ const ProfileModal = ({ user, isOpen, onClose }) => {
                                 onChange={handleChange}
                             />
                         </div>
+                        {success &&
+                            <div role="alert" class="alert alert-success">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <span>{success}</span>
+                            </div>
+                        }
+                        {error &&
+                            <div role="alert" class="alert alert-error">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <span>{error}</span>
+                            </div>
+                        }
+                       
                         <div className="modal-action">
                             <button type="button" className="btn" onClick={onClose}>Cancel</button>
                             <button type="submit" className="btn btn-primary">Save</button>
                         </div>
                     </form>
                 </fieldset>
+                <form method="dialog" className="modal-backdrop">
+                        <button>close</button>
+                </form>
             </div>
         </dialog>
     );
