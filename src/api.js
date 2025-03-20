@@ -57,11 +57,26 @@ const apiRequest = async (
 // API Functions using `apiRequest`
 
 export const fetchProfile = () => apiRequest("/accounts/profile/");
-export const fetchTickets = (pageOrUrl = 1) => {
-  const endpoint =
+export const fetchTickets = (
+  pageOrUrl = 1,
+  status = "",
+  query = "",
+  includeClosed = true
+) => {
+  let endpoint =
     typeof pageOrUrl === "string" ? pageOrUrl : `/tickets/?page=${pageOrUrl}`;
+
+  if (status) {
+    endpoint += `&status=${status}`;
+  } else if (!includeClosed) {
+    endpoint += `&status=open&status=pending&status=in_progress&status=resolved`;
+  }
+
+  if (query) endpoint += `&search=${query}`;
+
   return apiRequest(endpoint);
 };
+
 export const fetchCompanies = () => apiRequest("/companies/");
 export const createTicket = (ticketData) =>
   apiRequest("/tickets/", "POST", ticketData);

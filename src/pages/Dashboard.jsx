@@ -18,6 +18,9 @@ function Dashboard() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState({});
+  const [statusFilter, setStatusFilter] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [includeClosed, setIncludeClosed] = useState(false);
 
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
@@ -28,6 +31,11 @@ function Dashboard() {
   useEffect(() => {
     fetchProfile().then(data => setProfile(data));
   }, []);
+
+  const handleToggleClosed = () => {
+    setIncludeClosed((prev) => !prev);
+    setCurrentPage(1);
+  };
 
 
   useEffect(() => {
@@ -43,12 +51,25 @@ function Dashboard() {
   }, []);
 
   useEffect(() => {
-    loadTickets(currentPage);
-  }, [currentPage]);
+    const delayDebounce = setTimeout(() => {
+      loadTickets(1, statusFilter, searchQuery);
+    }, 500);
 
-  const loadTickets = async (page) => {
+    return () => clearTimeout(delayDebounce);
+  }, [searchQuery]);
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(1);
+  };
+
+  useEffect(() => {
+    loadTickets(currentPage, statusFilter, searchQuery);
+  }, [currentPage, statusFilter, includeClosed]);
+
+  const loadTickets = async (page, status = statusFilter, query = searchQuery) => {
     try {
-      const data = await fetchTickets(page);
+      const data = await fetchTickets(page, status, query, includeClosed);
       setTickets(data.results);
       setTotalPages(Math.ceil(data.count / 5));
       setNextPage(data.next);
@@ -63,6 +84,12 @@ function Dashboard() {
       setCurrentPage(newPage);
     }
   };
+
+  const handleStatusChange = (status) => {
+    setStatusFilter(status);
+    setCurrentPage(1);
+  };
+
 
   const handleOpenModal = () => {
     setIsCreateModalOpen(true);
@@ -83,6 +110,45 @@ function Dashboard() {
       <CounterCards />
       <div className="divider">
         <button className="btn btn-soft btn-success" onClick={handleOpenModal}>New Ticket</button>
+        <div className="dropdown dropdown-end">
+          <div tabIndex={0} role="button" className="btn">
+            Status: {statusFilter || "All"} ▼
+          </div>
+          <ul tabIndex={0} className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
+            <li><a onClick={() => handleStatusChange("")}>All</a></li>
+            <li><a onClick={() => handleStatusChange("open")}>Open</a></li>
+            <li><a onClick={() => handleStatusChange("pending")}>Pending</a></li>
+            <li><a onClick={() => handleStatusChange("in_progress")}>In Progress</a></li>
+            <li><a onClick={() => handleStatusChange("resolved")}>Resolved</a></li>
+            <li><a onClick={() => handleStatusChange("closed")}>Closed</a></li>
+          </ul>
+        </div>
+        <label className="input w-120">
+          <svg className="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none" stroke="currentColor">
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.3-4.3"></path>
+            </g>
+          </svg>
+          <input
+            type="search"
+            className="grow"
+            placeholder="Search in the title"
+            value={searchQuery}
+            onChange={handleSearchChange}
+          />
+        </label>
+        <fieldset className="fieldset p-2 bg-base-100 border border-base-300 rounded-box w-64">
+          <label className="fieldset-label flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={includeClosed}
+              onChange={handleToggleClosed}
+              className="toggle toggle-success"
+            />
+            Include Closed
+          </label>
+        </fieldset>
       </div>
       <TicketsTable tickets={tickets} />
       {/* Pagination Controls */}
