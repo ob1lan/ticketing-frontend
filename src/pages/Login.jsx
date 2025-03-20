@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { loginUser } from "../api";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -14,15 +15,7 @@ function Login() {
     setError(null);
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/auth/jwt/create/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-
-      if (!data.access || !data.refresh) throw new Error("Login failed!");
+      const data = await loginUser(email, password);
 
       localStorage.setItem("accessToken", data.access);
       localStorage.setItem("refreshToken", data.refresh);

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { changePassword } from "../api";
 
 const SettingsModal = ({ isOpen, onClose }) => {
     const [currentPassword, setCurrentPassword] = useState("");
@@ -21,21 +22,7 @@ const SettingsModal = ({ isOpen, onClose }) => {
         }
 
         try {
-            const token = localStorage.getItem("accessToken");
-            const res = await fetch("http://127.0.0.1:8000/auth/users/set_password/", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({
-                    current_password: currentPassword,
-                    new_password: newPassword,
-                }),
-            });
-
-            if (!res.ok) throw new Error("Failed to change password");
-
+            await changePassword(currentPassword, newPassword);
             setSuccess("Password updated successfully!");
             setCurrentPassword("");
             setNewPassword("");

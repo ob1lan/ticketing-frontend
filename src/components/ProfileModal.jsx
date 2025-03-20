@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { fetchProfile } from "../api";
 
 const ProfileModal = ({ user, isOpen, onClose }) => {
     const [profile, setProfile] = useState({
@@ -17,29 +18,14 @@ const ProfileModal = ({ user, isOpen, onClose }) => {
 
     useEffect(() => {
         if (isOpen) {
-            fetchProfile();
+            fetchProfile()
+                .then((data) => {
+                    setProfile(data);
+                    setAvatarPreview(data.avatar || "https://api.dicebear.com/7.x/identicon/svg?seed=" + data.username);
+                })
+                .catch(err => console.error("Error fetching profile:", err));
         }
     }, [isOpen]);
-
-    const fetchProfile = async () => {
-        try {
-            const token = localStorage.getItem("accessToken");
-            const res = await fetch("http://127.0.0.1:8000/accounts/profile/", {
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-
-            if (!res.ok) throw new Error("Failed to fetch profile");
-
-            const data = await res.json();
-            setProfile(data);
-            setAvatarPreview(data.avatar || "https://api.dicebear.com/7.x/identicon/svg?seed=username");
-        } catch (err) {
-            console.error("Error fetching profile:", err);
-        }
-    };
 
     const handleChange = (e) => {
         setProfile({ ...profile, [e.target.name]: e.target.value });
@@ -96,14 +82,14 @@ const ProfileModal = ({ user, isOpen, onClose }) => {
 
                         {/* Avatar Preview & URL Input */}
                         <div className="form-control flex flex-col items-center">
-                        
+
                             <div className="avatar avatar-online mb-3">
-                            {user && (
-                            <div className={user?.role === "admin" ? "ring-warning ring-offset-base-100 w-24 rounded-full ring ring-offset-2" :"ring-primary ring-offset-base-100 w-24 rounded-full ring ring-offset-2"} >
-                                <img src={avatarPreview} alt="User Avatar" />
+                                {user && (
+                                    <div className={user?.role === "admin" ? "ring-warning ring-offset-base-100 w-24 rounded-full ring ring-offset-2" : "ring-primary ring-offset-base-100 w-24 rounded-full ring ring-offset-2"} >
+                                        <img src={avatarPreview} alt="User Avatar" />
+                                    </div>
+                                )}
                             </div>
-                            )}
-                            </div>                            
                         </div>
                         <div className="form-control">
                             <label className="fieldset-label">Avatar URL</label>
@@ -176,7 +162,7 @@ const ProfileModal = ({ user, isOpen, onClose }) => {
                         {success &&
                             <div role="alert" class="alert alert-success">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                                 <span>{success}</span>
                             </div>
@@ -189,7 +175,7 @@ const ProfileModal = ({ user, isOpen, onClose }) => {
                                 <span>{error}</span>
                             </div>
                         }
-                       
+
                         <div className="modal-action">
                             <button type="button" className="btn" onClick={onClose}>Cancel</button>
                             <button type="submit" className="btn btn-primary">Save</button>

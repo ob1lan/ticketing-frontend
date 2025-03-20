@@ -79,7 +79,7 @@ TicketsTable.propTypes = {
       priority: PropTypes.string.isRequired,
       status: PropTypes.string.isRequired,
     })
-  ).isRequired,    
+  ).isRequired,
 };
 
 export default TicketsTable;

@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import { Editor } from "@tinymce/tinymce-react";
 import DOMPurify from "dompurify";
+import { fetchTicketComments, postTicketComment, fetchTicketTimeEntries } from "../api";
+
 
 function TicketModal({ ticket }) {
   const [activeTab, setActiveTab] = useState("details");
@@ -21,13 +23,11 @@ function TicketModal({ ticket }) {
   const commentEditorRef = useRef(null);
 
   useEffect(() => {
-    if (activeTab === "comments" && ticket) {
-      fetchComments(ticket.id);
-    }
-  }, [activeTab, ticket]);
+    if (!ticket) return;
 
-  useEffect(() => {
-    if (activeTab === "timespent" && ticket) {
+    if (activeTab === "comments") {
+      fetchComments(ticket.id);
+    } else if (activeTab === "timespent") {
       fetchTimeEntries(ticket.id);
     }
   }, [activeTab, ticket]);
@@ -37,17 +37,7 @@ function TicketModal({ ticket }) {
     setErrorComments(null);
 
     try {
-      const token = localStorage.getItem("accessToken");
-      const response = await fetch(`http://127.0.0.1:8000/tickets/${ticketId}/comments/`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) throw new Error("Failed to load comments");
-
-      const data = await response.json();
+      const data = await fetchTicketComments(ticketId);
       setComments(data.results);
     } catch (err) {
       setErrorComments(err.message);
@@ -61,17 +51,7 @@ function TicketModal({ ticket }) {
     setErrorTime(null);
 
     try {
-      const token = localStorage.getItem("accessToken");
-      const response = await fetch(`http://127.0.0.1:8000/tickets/${ticketId}/time-entries/`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) throw new Error("Failed to load time entries");
-
-      const data = await response.json();
+      const data = await fetchTicketTimeEntries(ticketId);
       setTimeEntries(data.results);
     } catch (err) {
       setErrorTime(err.message);
@@ -99,19 +79,8 @@ function TicketModal({ ticket }) {
     setIsSubmittingComment(true);
     setErrorPostingComment(null);
     try {
-      const token = localStorage.getItem("accessToken");
-      const response = await fetch(`http://127.0.0.1:8000/tickets/${ticket.id}/comments/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ message: newComment }),
-      });
-      if (!response.ok) throw new Error("Failed to post comment");
-      // Refresh the comment list after a successful post
+      await postTicketComment(ticket.id, newComment);
       fetchComments(ticket.id);
-      // Clear the editor content
       setNewComment("");
     } catch (err) {
       setErrorPostingComment(err.message);
@@ -127,17 +96,16 @@ function TicketModal({ ticket }) {
       <div className="modal-box container">
         <h3 className="font-bold text-lg">
           <span
-            className={`badge ${
-              ticket.status === "open"
-                ? "badge-error"
-                : ticket.status === "pending"
+            className={`badge ${ticket.status === "open"
+              ? "badge-error"
+              : ticket.status === "pending"
                 ? "badge-warning"
                 : ticket.status === "in_progress"
-                ? "badge-info"
-                : ticket.status === "resolved"
-                ? "badge-success"
-                : "badge-neutral"
-            }`}
+                  ? "badge-info"
+                  : ticket.status === "resolved"
+                    ? "badge-success"
+                    : "badge-neutral"
+              }`}
           >
             {ticket.status}
           </span>{" "}
@@ -219,12 +187,11 @@ function TicketModal({ ticket }) {
                 {comments.map((comment) => (
                   <div
                     key={comment.id}
-                    className={`chat ${
-                      comment.author_role === "admin" ? "chat-end" : "chat-start"
-                    }`}
+                    className={`chat ${comment.author_role === "admin" ? "chat-end" : "chat-start"
+                      }`}
                   >
                     <div className="chat-image avatar avatar-rounded">
-                      <div className={comment?.author_role === "admin" ? "ring-warning ring-offset-base-100 w-10 rounded-full ring ring-offset-2" :"ring-primary ring-offset-base-100 w-10 rounded-full ring ring-offset-2"} >
+                      <div className={comment?.author_role === "admin" ? "ring-warning ring-offset-base-100 w-10 rounded-full ring ring-offset-2" : "ring-primary ring-offset-base-100 w-10 rounded-full ring ring-offset-2"} >
                         <img
                           alt={comment.author_fullName}
                           src={comment?.author_avatar ? comment?.author_avatar : `https://api.dicebear.com/7.x/identicon/svg?seed=username`}
@@ -238,9 +205,9 @@ function TicketModal({ ticket }) {
                       </time>
                     </div>
                     <div
-                        className="chat-bubble"
-                        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(comment.message) }}
-                      />
+                      className="chat-bubble"
+                      dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(comment.message) }}
+                    />
                   </div>
                 ))}
               </div>
