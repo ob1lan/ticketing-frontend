@@ -7,9 +7,11 @@ function TicketsTable({ tickets, onTicketUpdated }) {
 
   const handleOpenModal = (ticket) => {
     setSelectedTicket(ticket);
-    document.getElementById("ticket_modal").showModal();
+    setTimeout(() => {
+      const modal = document.getElementById("ticket_modal");
+      if (modal) modal.showModal();
+    }, 0);
   };
-
 
   return (
     <div className="overflow-x-auto">

@@ -13,6 +13,7 @@ function TicketModal({ ticket, onTicketUpdated }) {
   const [timeEntries, setTimeEntries] = useState([]);
   const [loadingTime, setLoadingTime] = useState(false);
   const [errorTime, setErrorTime] = useState(null);
+  const [assignees, setAssignees] = useState([]);
 
   // New state for posting a comment
   const [newComment, setNewComment] = useState("");
@@ -90,12 +91,15 @@ function TicketModal({ ticket, onTicketUpdated }) {
     }
   };
 
-  const [assignees, setAssignees] = useState([]);
 
   useEffect(() => {
-    fetchAssignees().then(setAssignees).catch(console.error);
+    fetchAssignees()
+      .then((res) => {
+        const data = Array.isArray(res) ? res : res.results || [];
+        setAssignees(data);
+      })
+      .catch(console.error);
   }, []);
-
 
   const formatTimestamp = (timestamp) => {
     const date = new Date(timestamp);
@@ -252,11 +256,12 @@ function TicketModal({ ticket, onTicketUpdated }) {
                     onChange={(e) => setEditedTicket({ ...editedTicket, assignee: e.target.value })}
                   >
                     <option value="">Non assigné</option>
-                    {assignees.map((user) => (
-                      <option key={user.id} value={user.id}>
-                        {user.fullname}
-                      </option>
-                    ))}
+                    {Array.isArray(assignees) &&
+                      assignees.map((user) => (
+                        <option key={user.id} value={user.id}>
+                          {user.first_name} {user.last_name}
+                        </option>
+                      ))}
                   </select>
                 </label>
 
