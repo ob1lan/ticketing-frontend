@@ -118,10 +118,10 @@ function Dashboard() {
         <button className="btn btn-soft btn-success" onClick={handleOpenModal}>New Ticket</button>
         <div className="dropdown dropdown-end">
           <div tabIndex={0} role="button" className="btn">
-            Status: {statusFilter || "All"} ▼
+            Status: {statusFilter || "Not Closed"} ▼
           </div>
           <ul tabIndex={0} className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
-            <li><a onClick={() => handleStatusChange("")}>All</a></li>
+            <li><a onClick={() => handleStatusChange("")}>Not Closed</a></li>
             <li><a onClick={() => handleStatusChange("open")}>Open</a></li>
             <li><a onClick={() => handleStatusChange("pending")}>Pending</a></li>
             <li><a onClick={() => handleStatusChange("in_progress")}>In Progress</a></li>
@@ -129,7 +129,7 @@ function Dashboard() {
             <li><a onClick={() => handleStatusChange("closed")}>Closed</a></li>
           </ul>
         </div>
-        <label className="input w-120">
+        <label className="input w-170">
           <svg className="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
             <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none" stroke="currentColor">
               <circle cx="11" cy="11" r="8"></circle>

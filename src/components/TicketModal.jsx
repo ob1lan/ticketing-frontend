@@ -14,14 +14,10 @@ function TicketModal({ ticket, onTicketUpdated }) {
   const [loadingTime, setLoadingTime] = useState(false);
   const [errorTime, setErrorTime] = useState(null);
   const [assignees, setAssignees] = useState([]);
-
-  // New state for posting a comment
   const [newComment, setNewComment] = useState("");
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
   const [errorPostingComment, setErrorPostingComment] = useState(null);
-
   const commentEditorRef = useRef(null);
-
   const [editedTicket, setEditedTicket] = useState({
     title: ticket?.title || "",
     priority: ticket?.priority || "low",
@@ -40,8 +36,20 @@ function TicketModal({ ticket, onTicketUpdated }) {
       assignee: ticket.assignee,
       description: ticket.description,
     });
-  }, [ticket]);
 
+    fetchAssignees()
+      .then((res) => {
+        const data = Array.isArray(res) ? res : res.results || [];
+        setAssignees(data);
+      })
+      .catch(console.error);
+
+    if (activeTab === "comments") {
+      fetchComments(ticket.id);
+    } else if (activeTab === "timespent") {
+      fetchTimeEntries(ticket.id);
+    }
+  }, [ticket, activeTab]);
 
   const handleSaveChanges = async () => {
     try {
@@ -52,16 +60,6 @@ function TicketModal({ ticket, onTicketUpdated }) {
       console.error("Failed to update ticket", error);
     }
   };
-
-  useEffect(() => {
-    if (!ticket) return;
-
-    if (activeTab === "comments") {
-      fetchComments(ticket.id);
-    } else if (activeTab === "timespent") {
-      fetchTimeEntries(ticket.id);
-    }
-  }, [activeTab, ticket]);
 
   const fetchComments = async (ticketId) => {
     setLoadingComments(true);
@@ -90,16 +88,6 @@ function TicketModal({ ticket, onTicketUpdated }) {
       setLoadingTime(false);
     }
   };
-
-
-  useEffect(() => {
-    fetchAssignees()
-      .then((res) => {
-        const data = Array.isArray(res) ? res : res.results || [];
-        setAssignees(data);
-      })
-      .catch(console.error);
-  }, []);
 
   const formatTimestamp = (timestamp) => {
     const date = new Date(timestamp);
