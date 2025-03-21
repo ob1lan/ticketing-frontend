@@ -2,10 +2,10 @@ import React, { useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import { Editor } from "@tinymce/tinymce-react";
 import DOMPurify from "dompurify";
-import { fetchTicketComments, postTicketComment, fetchTicketTimeEntries } from "../api";
+import { updateTicket, fetchTicketComments, postTicketComment, fetchTicketTimeEntries, fetchAssignees } from "../api";
 
 
-function TicketModal({ ticket }) {
+function TicketModal({ ticket, onTicketUpdated }) {
   const [activeTab, setActiveTab] = useState("details");
   const [comments, setComments] = useState([]);
   const [loadingComments, setLoadingComments] = useState(false);
@@ -19,8 +19,38 @@ function TicketModal({ ticket }) {
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
   const [errorPostingComment, setErrorPostingComment] = useState(null);
 
-  const editorRef = useRef(null);
   const commentEditorRef = useRef(null);
+
+  const [editedTicket, setEditedTicket] = useState({
+    title: ticket?.title || "",
+    priority: ticket?.priority || "low",
+    status: ticket?.status || "open",
+    assignee: ticket?.assignee || "",
+    description: ticket?.description || "",
+  });
+
+  useEffect(() => {
+    if (!ticket) return;
+
+    setEditedTicket({
+      title: ticket.title,
+      priority: ticket.priority,
+      status: ticket.status,
+      assignee: ticket.assignee,
+      description: ticket.description,
+    });
+  }, [ticket]);
+
+
+  const handleSaveChanges = async () => {
+    try {
+      const updatedTicket = await updateTicket(ticket.id, editedTicket);
+      setEditedTicket(updatedTicket);
+      onTicketUpdated(updatedTicket);
+    } catch (error) {
+      console.error("Failed to update ticket", error);
+    }
+  };
 
   useEffect(() => {
     if (!ticket) return;
@@ -59,6 +89,13 @@ function TicketModal({ ticket }) {
       setLoadingTime(false);
     }
   };
+
+  const [assignees, setAssignees] = useState([]);
+
+  useEffect(() => {
+    fetchAssignees().then(setAssignees).catch(console.error);
+  }, []);
+
 
   const formatTimestamp = (timestamp) => {
     const date = new Date(timestamp);
@@ -107,8 +144,20 @@ function TicketModal({ ticket }) {
                     : "badge-neutral"
               }`}
           >
-            {ticket.status}
-          </span>{" "}
+            {ticket.status === "open"
+              ? "Open"
+              : ticket.status === "pending"
+                ? "Pending"
+                : ticket.status === "in_progress"
+                  ? "In Progress"
+                  : ticket.status === "resolved"
+                    ? "Resolved"
+                    : ticket.status === "closed"
+                      ? "Closed"
+                      : "Unknown"}
+          </span>
+
+          {" "}
           Ticket {ticket.unique_reference}
         </h3>
         <h5>
@@ -144,38 +193,103 @@ function TicketModal({ ticket }) {
         {/* Tab Content */}
         <div className="mt-4">
           {activeTab === "details" && (
-            <Editor
-              apiKey="exntuwohcc26tmyo74spy1dxscradb69wx8dn79stb9tsqbz"
-              onInit={(_evt, editor) => (editorRef.current = editor)}
-              initialValue={ticket.description}
-              init={{
-                height: 300,
-                menubar: false,
-                plugins: [
-                  "advlist",
-                  "autolink",
-                  "lists",
-                  "link",
-                  "image",
-                  "charmap",
-                  "preview",
-                  "anchor",
-                  "searchreplace",
-                  "visualblocks",
-                  "code",
-                  "fullscreen",
-                  "insertdatetime",
-                  "media",
-                  "table",
-                  "code",
-                  "wordcount",
-                ],
-                toolbar:
-                  "undo redo | blocks | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help",
-                content_style:
-                  "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
-              }}
-            />
+            <>
+              {/* Ticket Edit Form */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+
+                {/* Type */}
+                <label className="fieldset w-full">
+                  <span className="fieldset-label font-bold">Type</span>
+                  <select
+                    className="select select-bordered w-full"
+                    value={editedTicket.type}
+                    onChange={(e) => setEditedTicket({ ...editedTicket, type: e.target.value })}
+                    required
+                  >
+                    <option value="service_request">Service Request</option>
+                    <option value="change_request">Change Request</option>
+                    <option value="incident">Incident</option>
+                  </select>
+                </label>
+
+                {/* Priority */}
+                <label className="fieldset w-full">
+                  <span className="fieldset-label font-bold">Priority</span>
+                  <select
+                    className="select select-bordered w-full"
+                    value={editedTicket.priority}
+                    onChange={(e) => setEditedTicket({ ...editedTicket, priority: e.target.value })}
+                    required
+                  >
+                    <option value="low">🟢 Low</option>
+                    <option value="medium">🟡 Medium</option>
+                    <option value="high">🔴 High</option>
+                  </select>
+                </label>
+
+                {/* Status */}
+                <label className="fieldset w-full">
+                  <span className="fieldset-label font-bold">Status</span>
+                  <select
+                    className="select select-bordered w-full"
+                    value={editedTicket.status}
+                    onChange={(e) => setEditedTicket({ ...editedTicket, status: e.target.value })}
+                  >
+                    <option value="open">🛠️ Open</option>
+                    <option value="pending">⏳ Pending</option>
+                    <option value="in_progress">🚧 In Progress</option>
+                    <option value="resolved">✅ Resolved</option>
+                    <option value="closed">🔒 Closed</option>
+                  </select>
+                </label>
+
+                {/* Assignee */}
+                <label className="fieldset w-full">
+                  <span className="fieldset-label font-bold">Assignee</span>
+                  <select
+                    className="select select-bordered w-full"
+                    value={editedTicket.assignee}
+                    onChange={(e) => setEditedTicket({ ...editedTicket, assignee: e.target.value })}
+                  >
+                    <option value="">Non assigné</option>
+                    {assignees.map((user) => (
+                      <option key={user.id} value={user.id}>
+                        {user.fullname}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+              </div>
+
+              {/* Description (Editable) */}
+              <div className="mt-4">
+                <span className="text-lg font-bold">Description</span>
+                <Editor
+                  apiKey="exntuwohcc26tmyo74spy1dxscradb69wx8dn79stb9tsqbz"
+                  initialValue={editedTicket.description}
+                  init={{
+                    height: 300,
+                    menubar: false,
+                    plugins: [
+                      "advlist", "autolink", "lists", "link",
+                      "charmap", "preview", "anchor", "searchreplace",
+                      "visualblocks", "code", "fullscreen", "insertdatetime",
+                      "media", "table", "wordcount"
+                    ],
+                    toolbar:
+                      "undo redo | bold italic forecolor | alignleft aligncenter alignright | bullist numlist outdent indent | removeformat | help",
+                    content_style: "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
+                  }}
+                  onEditorChange={(content) => setEditedTicket({ ...editedTicket, description: content })}
+                />
+              </div>
+
+              {/* Save Button */}
+              <div className="modal-action">
+                <button className="btn btn-primary" onClick={handleSaveChanges}>Save Changes</button>
+              </div>
+            </>
           )}
 
           {activeTab === "comments" && (

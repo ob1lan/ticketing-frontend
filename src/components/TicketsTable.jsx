@@ -2,13 +2,14 @@ import React, { useState } from "react";
 import PropTypes from "prop-types";
 import TicketModal from "./TicketModal";
 
-function TicketsTable({ tickets }) {
+function TicketsTable({ tickets, onTicketUpdated }) {
   const [selectedTicket, setSelectedTicket] = useState(null);
 
   const handleOpenModal = (ticket) => {
     setSelectedTicket(ticket);
     document.getElementById("ticket_modal").showModal();
   };
+
 
   return (
     <div className="overflow-x-auto">
@@ -25,13 +26,28 @@ function TicketsTable({ tickets }) {
         </thead>
         <tbody>
           {tickets.map((ticket) => {
+            let statusValue = ticket.status;
             let badgeClass = "badge-ghost";
-            if (ticket.status === "open") badgeClass = "badge-error";
-            else if (ticket.status === "pending") badgeClass = "badge-warning";
-            else if (ticket.status === "in_progress") badgeClass = "badge-info";
-            else if (ticket.status === "resolved") badgeClass = "badge-success";
-            else if (ticket.status === "closed") badgeClass = "badge-neutral";
-
+            if (ticket.status === "open") {
+              badgeClass = "badge-error";
+              statusValue = "Open";
+            }
+            else if (ticket.status === "pending") {
+              badgeClass = "badge-warning";
+              statusValue = "Pending";
+            }
+            else if (ticket.status === "in_progress") {
+              badgeClass = "badge-info";
+              statusValue = "In Progress";
+            }
+            else if (ticket.status === "resolved") {
+              badgeClass = "badge-success";
+              statusValue = "Resolved";
+            }
+            else if (ticket.status === "closed") {
+              badgeClass = "badge-neutral";
+              statusValue = "Closed";
+            }
             return (
               <tr key={ticket.unique_reference} className="hover">
                 <td>
@@ -45,7 +61,7 @@ function TicketsTable({ tickets }) {
                     </div>
                     <div>
                       <div className="font-bold">{ticket.unique_reference}</div>
-                      <span className={`badge ${badgeClass} badge-sm`}>{ticket.status}</span>
+                      <span className={`badge ${badgeClass} badge-sm`}>{statusValue}</span>
                     </div>
                   </div>
                 </td>
@@ -65,7 +81,7 @@ function TicketsTable({ tickets }) {
           })}
         </tbody>
       </table>
-      <TicketModal ticket={selectedTicket} />
+      <TicketModal ticket={selectedTicket} onTicketUpdated={onTicketUpdated} />
     </div>
   );
 }
@@ -80,6 +96,7 @@ TicketsTable.propTypes = {
       status: PropTypes.string.isRequired,
     })
   ).isRequired,
+  onTicketUpdated: PropTypes.func.isRequired,
 };
 
 export default TicketsTable;

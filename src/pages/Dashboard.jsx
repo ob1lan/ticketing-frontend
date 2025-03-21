@@ -103,6 +103,12 @@ function Dashboard() {
     setTickets([newTicket, ...tickets]);
   };
 
+  const handleTicketUpdated = (updatedTicket) => {
+    setTickets((prevTickets) =>
+      prevTickets.map((t) => (t.id === updatedTicket.id ? updatedTicket : t))
+    );
+  };
+
   return (
     <>
       <Navbar onOpenProfile={() => setIsProfileOpen(true)} onOpenSettings={() => setIsSettingsOpen(true)} profile={profile} user={user} />
@@ -150,7 +156,7 @@ function Dashboard() {
           </label>
         </fieldset>
       </div>
-      <TicketsTable tickets={tickets} />
+      <TicketsTable tickets={tickets} onTicketUpdated={handleTicketUpdated} />
       {/* Pagination Controls */}
       <div className="join p-2">
         <button
