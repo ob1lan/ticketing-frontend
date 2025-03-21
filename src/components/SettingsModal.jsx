@@ -1,4 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+
+const themes = [
+    "light", "dark", "cupcake", "bumblebee", "emerald",
+    "corporate", "synthwave", "retro", "cyberpunk",
+    "valentine", "halloween", "garden", "forest",
+    "aqua", "lofi", "pastel", "fantasy", "wireframe",
+    "black", "luxury", "dracula", "cmyk", "autumn",
+    "business", "acid", "lemonade", "night", "coffee", "winter",
+];
 import { changePassword } from "../api";
 
 const SettingsModal = ({ isOpen, onClose }) => {
@@ -8,6 +17,7 @@ const SettingsModal = ({ isOpen, onClose }) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
+    const [selectedTheme, setSelectedTheme] = useState(localStorage.getItem("theme") || "light");
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -35,6 +45,16 @@ const SettingsModal = ({ isOpen, onClose }) => {
         }
     };
 
+    useEffect(() => {
+        document.documentElement.setAttribute("data-theme", selectedTheme);
+    }, [selectedTheme]);
+
+    const handleThemeChange = (theme) => {
+        setSelectedTheme(theme);
+        localStorage.setItem("theme", theme);
+        document.documentElement.setAttribute("data-theme", theme);
+    };
+
     if (!isOpen) return null;
 
     return (
@@ -49,6 +69,29 @@ const SettingsModal = ({ isOpen, onClose }) => {
                     {error && <div className="alert alert-error">{error}</div>}
                     {success && <div className="alert alert-success">{success}</div>}
 
+                    {/* Theme Selection Dropdown */}
+
+                    <div className="form-control">
+                        <label className="fieldset-label">
+                            <span className="label-text">Select Theme</span>
+                        </label>
+
+                        <select
+                            className="select select-bordered w-full"
+                            value={selectedTheme}
+                            onChange={(e) => handleThemeChange(e.target.value)}
+                        >
+                            {themes.map((theme) => (
+                                <option key={theme} value={theme}>
+                                    {theme.charAt(0).toUpperCase() + theme.slice(1)}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className="modal-action">
+                        <button type="button" className="btn" onClick={onClose}>Save</button>
+                    </div>
+                    <div className="divider">Password change</div>
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="form-control">
                             <label className="fieldset-label">Current Password</label>
@@ -89,7 +132,7 @@ const SettingsModal = ({ isOpen, onClose }) => {
                         </div>
 
                         <div className="modal-action">
-                            <button type="button" className="btn" onClick={onClose}>Cancel</button>
+                            <button type="button" className="btn" onClick={onClose}>Close</button>
                             <button type="submit" className="btn btn-primary" disabled={loading}>
                                 {loading ? "Updating..." : "Change Password"}
                             </button>
