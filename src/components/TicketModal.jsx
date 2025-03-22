@@ -18,6 +18,7 @@ function TicketModal({ ticket, onTicketUpdated }) {
   const [errorPostingComment, setErrorPostingComment] = useState(null);
   const [editedTicket, setEditedTicket] = useState({
     title: ticket?.title || "",
+    type: ticket?.type || "",
     priority: ticket?.priority || "",
     status: ticket?.status || "",
     assignee: ticket?.assignee || "",
@@ -29,6 +30,7 @@ function TicketModal({ ticket, onTicketUpdated }) {
 
     setEditedTicket({
       title: ticket.title,
+      type: ticket.type,
       priority: ticket.priority,
       status: ticket.status,
       assignee: ticket.assignee,

@@ -9,11 +9,11 @@ function TicketsTable({ tickets, onTicketUpdated }) {
   const handleOpenModal = (ticket) => {
     fetchTicketById(ticket.id).then((data) => {
       setSelectedTicket(data);
+      setTimeout(() => {
+        const modal = document.getElementById("ticket_modal");
+        if (modal) modal.showModal();
+      }, 0);
     });
-    setTimeout(() => {
-      const modal = document.getElementById("ticket_modal");
-      if (modal) modal.showModal();
-    }, 0);
   };
 
   return (
