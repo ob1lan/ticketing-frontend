@@ -134,17 +134,16 @@ function TicketModal({ ticket, onTicketUpdated }) {
       <div className="modal-box container">
         <h3 className="font-bold text-lg">
           <span
-            className={`badge ${
-              ticket.status === "open"
+            className={`badge ${ticket.status === "open"
                 ? "badge-error"
                 : ticket.status === "pending"
-                ? "badge-warning"
-                : ticket.status === "in_progress"
-                ? "badge-info"
-                : ticket.status === "resolved"
-                ? "badge-success"
-                : "badge-neutral"
-            }`}
+                  ? "badge-warning"
+                  : ticket.status === "in_progress"
+                    ? "badge-info"
+                    : ticket.status === "resolved"
+                      ? "badge-success"
+                      : "badge-neutral"
+              }`}
           >
             {{
               open: "Open",
@@ -173,8 +172,8 @@ function TicketModal({ ticket, onTicketUpdated }) {
               {tab === "details"
                 ? "Description"
                 : tab === "comments"
-                ? "Comments"
-                : "Time Spent"}
+                  ? "Comments"
+                  : "Time Spent"}
             </a>
           ))}
         </div>
