@@ -54,9 +54,9 @@ const CreateTicketModal = ({ isOpen, onClose, onTicketCreated, user }) => {
 
     return (
         <dialog ref={modalRef} id="create_ticket_modal" className="modal modal-open">
-            <form method="dialog" className="modal-backdrop" onClick={onClose}>
-                <button>close</button>
-            </form>
+            <button type="button" className="modal-backdrop" onClick={onClose} aria-label="Close modal">
+                <span>close</span>
+            </button>
             <div className="modal-box w-11/12 max-w-3xl">
                 <fieldset className="fieldset bg-base-100 border border-base-300 p-6 rounded-box shadow-md">
                     <legend className="fieldset-legend text-lg font-bold">Create New Ticket</legend>
