@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { fetchCompanies, createTicket } from "../../api";
 import CreateTicketForm from "./CreateTicketForm";
+import PropTypes from "prop-types";
 
 const CreateTicketModal = ({ isOpen, onClose, onTicketCreated, user }) => {
     const [formData, setFormData] = useState({
@@ -68,6 +69,15 @@ const CreateTicketModal = ({ isOpen, onClose, onTicketCreated, user }) => {
             </div>
         </dialog>
     );
+};
+
+CreateTicketModal.propTypes = {
+    isOpen: PropTypes.bool.isRequired,
+    onClose: PropTypes.func.isRequired,
+    onTicketCreated: PropTypes.func.isRequired,
+    user: PropTypes.shape({
+        role: PropTypes.string.isRequired,
+    }).isRequired,
 };
 
 export default CreateTicketModal;

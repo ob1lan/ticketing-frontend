@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { changePassword } from "../../api";
+import PropTypes from "prop-types";
 
 const PasswordChangeForm = ({ onSuccess, onError, onClose }) => {
     const [currentPassword, setCurrentPassword] = useState("");
@@ -83,6 +84,12 @@ const PasswordChangeForm = ({ onSuccess, onError, onClose }) => {
             </div>
         </form>
     );
+};
+
+PasswordChangeForm.propTypes = {
+    onSuccess: PropTypes.func.isRequired,
+    onError: PropTypes.func.isRequired,
+    onClose: PropTypes.func.isRequired,
 };
 
 export default PasswordChangeForm;

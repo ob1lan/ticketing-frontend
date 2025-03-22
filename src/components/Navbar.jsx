@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import PropTypes from "prop-types";
 
 function Navbar({ user, profile, onOpenProfile, onOpenSettings }) {
   const navigate = useNavigate();
@@ -73,5 +74,12 @@ function Navbar({ user, profile, onOpenProfile, onOpenSettings }) {
     </div>
   );
 }
+
+Navbar.propTypes = {
+  user: PropTypes.object,
+  profile: PropTypes.object.isRequired,
+  onOpenProfile: PropTypes.func.isRequired,
+  onOpenSettings: PropTypes.func.isRequired,
+};
 
 export default Navbar;

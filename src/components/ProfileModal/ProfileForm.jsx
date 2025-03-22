@@ -1,5 +1,7 @@
 import React from "react";
 import AvatarPreview from "./AvatarPreview";
+import PropTypes from "prop-types";
+
 
 const ProfileForm = ({
     profile,
@@ -105,5 +107,18 @@ const ProfileForm = ({
         </div>
     </form>
 );
+
+ProfileForm.propTypes = {
+    profile: PropTypes.object.isRequired,
+    avatarPreview: PropTypes.string.isRequired,
+    user: PropTypes.object.isRequired,
+    handleChange: PropTypes.func.isRequired,
+    handleAvatarURLChange: PropTypes.func.isRequired,
+    handleSubmit: PropTypes.func.isRequired,
+    onClose: PropTypes.func.isRequired,
+    success: PropTypes.string,
+    error: PropTypes.string,
+    loading: PropTypes.bool.isRequired,
+};
 
 export default ProfileForm;

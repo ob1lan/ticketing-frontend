@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { fetchProfile } from "../../api";
 import ProfileForm from "./ProfileForm";
+import PropTypes from "prop-types";
+
 
 const ProfileModal = ({ user, isOpen, onClose }) => {
     const [profile, setProfile] = useState({
@@ -96,6 +98,12 @@ const ProfileModal = ({ user, isOpen, onClose }) => {
             </div>
         </dialog>
     );
+};
+
+ProfileModal.propTypes = {
+    user: PropTypes.object.isRequired,
+    isOpen: PropTypes.bool.isRequired,
+    onClose: PropTypes.func.isRequired,
 };
 
 export default ProfileModal;

@@ -11,6 +11,7 @@ import {
 import TicketDetailsTab from "./TicketDetailsTab";
 import TicketCommentsTab from "./TicketCommentsTab";
 import TicketTimeSpentTab from "./TicketTimeSpentTab";
+import { STATUS_BADGES, STATUS_LABELS } from "../../utils/constants";
 
 function TicketModal({ ticket, onTicketUpdated }) {
   const [activeTab, setActiveTab] = useState("details");
@@ -133,26 +134,8 @@ function TicketModal({ ticket, onTicketUpdated }) {
     <dialog id="ticket_modal" className="modal">
       <div className="modal-box container">
         <h3 className="font-bold text-lg">
-          <span
-            className={`badge ${ticket.status === "open"
-                ? "badge-error"
-                : ticket.status === "pending"
-                  ? "badge-warning"
-                  : ticket.status === "in_progress"
-                    ? "badge-info"
-                    : ticket.status === "resolved"
-                      ? "badge-success"
-                      : "badge-neutral"
-              }`}
-          >
-            {{
-              open: "Open",
-              pending: "Pending",
-              in_progress: "In Progress",
-              resolved: "Resolved",
-              closed: "Closed",
-            }[ticket.status] || "Unknown"}
-          </span>{" "}
+          <span className={`badge ${STATUS_BADGES[ticket.status]}`}>{STATUS_LABELS[ticket.status]}</span>
+          {" "}
           Ticket {ticket.unique_reference}
         </h3>
         <h5>
@@ -226,7 +209,7 @@ function TicketModal({ ticket, onTicketUpdated }) {
           </form>
         </div>
       </div>
-    </dialog>
+    </dialog >
   );
 }
 

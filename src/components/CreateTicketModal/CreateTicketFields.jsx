@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 const CreateTicketFields = ({ user, companies, formData, onChange }) => (
   <>
@@ -71,5 +72,12 @@ const CreateTicketFields = ({ user, companies, formData, onChange }) => (
     </div>
   </>
 );
+
+CreateTicketFields.propTypes = {
+  user: PropTypes.object.isRequired,
+  companies: PropTypes.array.isRequired,
+  formData: PropTypes.object.isRequired,
+  onChange: PropTypes.func.isRequired,
+};
 
 export default CreateTicketFields;

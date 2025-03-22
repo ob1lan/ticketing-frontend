@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import ThemeSelector from "./ThemeSelector";
 import PasswordChangeForm from "./PasswordChangeForm";
+import PropTypes from "prop-types";
 
 const SettingsModal = ({ isOpen, onClose }) => {
     const [success, setSuccess] = useState("");
@@ -39,6 +40,11 @@ const SettingsModal = ({ isOpen, onClose }) => {
             </div>
         </dialog>
     );
+};
+
+SettingsModal.propTypes = {
+    isOpen: PropTypes.bool.isRequired,
+    onClose: PropTypes.func.isRequired,
 };
 
 export default SettingsModal;

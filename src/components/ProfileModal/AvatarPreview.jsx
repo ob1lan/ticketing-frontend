@@ -1,4 +1,6 @@
 import React from "react";
+import PropTypes from "prop-types";
+
 
 const AvatarPreview = ({ avatarPreview, role }) => (
     <div className="form-control flex flex-col items-center">
@@ -13,5 +15,10 @@ const AvatarPreview = ({ avatarPreview, role }) => (
         </div>
     </div>
 );
+
+AvatarPreview.propTypes = {
+    avatarPreview: PropTypes.string.isRequired,
+    role: PropTypes.string.isRequired,
+};
 
 export default AvatarPreview;

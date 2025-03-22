@@ -1,6 +1,7 @@
-// src/components/TicketModal/TicketCommentsTab.jsx
 import React from "react";
 import DOMPurify from "dompurify";
+import PropTypes from "prop-types";
+
 
 function TicketCommentsTab({
   comments,
@@ -69,5 +70,17 @@ function TicketCommentsTab({
     </>
   );
 }
+
+TicketCommentsTab.propTypes = {
+  comments: PropTypes.array.isRequired,
+  newComment: PropTypes.string.isRequired,
+  setNewComment: PropTypes.func.isRequired,
+  loadingComments: PropTypes.bool.isRequired,
+  errorComments: PropTypes.string,
+  isSubmittingComment: PropTypes.bool.isRequired,
+  errorPostingComment: PropTypes.string,
+  handleSubmitComment: PropTypes.func.isRequired,
+  formatTimestamp: PropTypes.func.isRequired,
+};
 
 export default TicketCommentsTab;

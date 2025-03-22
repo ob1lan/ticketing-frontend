@@ -1,5 +1,5 @@
-// src/components/TicketModal/TicketDetailsTab.jsx
 import React from "react";
+import PropTypes from "prop-types";
 
 function TicketDetailsTab({ editedTicket, setEditedTicket, assignees }) {
     return (
@@ -88,5 +88,11 @@ function TicketDetailsTab({ editedTicket, setEditedTicket, assignees }) {
         </>
     );
 }
+
+TicketDetailsTab.propTypes = {
+    editedTicket: PropTypes.object.isRequired,
+    setEditedTicket: PropTypes.func.isRequired,
+    assignees: PropTypes.array.isRequired,
+};
 
 export default TicketDetailsTab;

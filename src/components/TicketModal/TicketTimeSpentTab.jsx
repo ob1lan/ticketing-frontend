@@ -1,5 +1,6 @@
-// src/components/TicketModal/TicketTimeSpentTab.jsx
 import React from "react";
+import PropTypes from "prop-types";
+
 
 function TicketTimeSpentTab({ timeEntries, loadingTime, errorTime, totalTimeSpent, formatTimestamp }) {
   return (
@@ -35,5 +36,13 @@ function TicketTimeSpentTab({ timeEntries, loadingTime, errorTime, totalTimeSpen
     </div>
   );
 }
+
+TicketTimeSpentTab.propTypes = {
+  timeEntries: PropTypes.array.isRequired,
+  loadingTime: PropTypes.bool.isRequired,
+  errorTime: PropTypes.string,
+  totalTimeSpent: PropTypes.number.isRequired,
+  formatTimestamp: PropTypes.func.isRequired,
+};
 
 export default TicketTimeSpentTab;
