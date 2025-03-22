@@ -1,20 +1,25 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import TicketModal from "./TicketModal";
 import { fetchTicketById } from "../api";
 
 function TicketsTable({ tickets, onTicketUpdated }) {
   const [selectedTicket, setSelectedTicket] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
 
   const handleOpenModal = (ticket) => {
     fetchTicketById(ticket.id).then((data) => {
       setSelectedTicket(data);
-      setTimeout(() => {
-        const modal = document.getElementById("ticket_modal");
-        if (modal) modal.showModal();
-      }, 0);
+      setModalVisible(true);
     });
   };
+
+  useEffect(() => {
+    if (modalVisible && selectedTicket) {
+      const modal = document.getElementById("ticket_modal");
+      if (modal) modal.showModal();
+    }
+  }, [modalVisible, selectedTicket]);
 
   return (
     <div className="overflow-x-auto">
@@ -86,7 +91,10 @@ function TicketsTable({ tickets, onTicketUpdated }) {
           })}
         </tbody>
       </table>
-      <TicketModal ticket={selectedTicket} onTicketUpdated={onTicketUpdated} />
+      <TicketModal ticket={selectedTicket} onTicketUpdated={onTicketUpdated} onCloseModal={() => {
+        setModalVisible(false);
+        setSelectedTicket(null);
+      }} />
     </div>
   );
 }
