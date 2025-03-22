@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { fetchCompanies, createTicket } from "../api";
 
 const CreateTicketModal = ({ isOpen, onClose, onTicketCreated, user }) => {
   const [title, setTitle] = useState("");
@@ -11,28 +12,9 @@ const CreateTicketModal = ({ isOpen, onClose, onTicketCreated, user }) => {
 
   useEffect(() => {
     if (user?.role === "admin") {
-      fetchCompanies();
+      fetchCompanies().then((data) => setCompanies(data.results));
     }
   }, [user]);
-
-  const fetchCompanies = async () => {
-    try {
-      const token = localStorage.getItem("accessToken");
-      const res = await fetch("http://127.0.0.1:8000/companies/", {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!res.ok) throw new Error("Failed to fetch companies");
-
-      const data = await res.json();
-      setCompanies(data.results);
-    } catch (err) {
-      console.error("Error fetching companies:", err);
-    }
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -42,38 +24,24 @@ const CreateTicketModal = ({ isOpen, onClose, onTicketCreated, user }) => {
       description,
       priority,
       type,
-      ...(user.role === "admin" && { company }), // Only include company if admin
+      ...(user.role === "admin" && { company }),
     };
 
     try {
-      const token = localStorage.getItem("accessToken");
-      const res = await fetch("http://127.0.0.1:8000/tickets/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (!res.ok) {
-        const errData = await res.json();
-        setError(JSON.stringify(errData));
-      } else {
-        const data = await res.json();
-        onTicketCreated && onTicketCreated(data);
-        setTitle("");
-        setDescription("");
-        setPriority("low");
-        setType("incident");
-        setCompany("");
-        setError("");
-        onClose();
-      }
+      const newTicket = await createTicket(payload);
+      onTicketCreated?.(newTicket);
+      setTitle("");
+      setDescription("");
+      setPriority("low");
+      setType("incident");
+      setCompany("");
+      setError("");
+      onClose();
     } catch (err) {
-      setError(err.message);
+      setError(err.message || "Failed to create ticket");
     }
   };
+
 
   if (!isOpen) return null;
 
