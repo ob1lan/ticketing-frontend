@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { Editor } from "@tinymce/tinymce-react";
 import DOMPurify from "dompurify";
 import { updateTicket, fetchTicketComments, postTicketComment, fetchTicketTimeEntries, fetchAssignees } from "../api";
 
@@ -17,11 +16,10 @@ function TicketModal({ ticket, onTicketUpdated }) {
   const [newComment, setNewComment] = useState("");
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
   const [errorPostingComment, setErrorPostingComment] = useState(null);
-  const commentEditorRef = useRef(null);
   const [editedTicket, setEditedTicket] = useState({
     title: ticket?.title || "",
-    priority: ticket?.priority || "low",
-    status: ticket?.status || "open",
+    priority: ticket?.priority || "",
+    status: ticket?.status || "",
     assignee: ticket?.assignee || "",
     description: ticket?.description || "",
   });
@@ -198,9 +196,9 @@ function TicketModal({ ticket, onTicketUpdated }) {
                     onChange={(e) => setEditedTicket({ ...editedTicket, type: e.target.value })}
                     required
                   >
-                    <option value="service_request">Service Request</option>
-                    <option value="change_request">Change Request</option>
-                    <option value="incident">Incident</option>
+                    <option value="service_request">📝 Service Request</option>
+                    <option value="change_request">🔧 Change Request</option>
+                    <option value="incident">⚠️ Incident</option>
                   </select>
                 </label>
 
@@ -252,30 +250,15 @@ function TicketModal({ ticket, onTicketUpdated }) {
                       ))}
                   </select>
                 </label>
-
               </div>
 
               {/* Description (Editable) */}
-              <div className="mt-4">
-                <span className="text-lg font-bold">Description</span>
-                <Editor
-                  apiKey="exntuwohcc26tmyo74spy1dxscradb69wx8dn79stb9tsqbz"
-                  initialValue={editedTicket.description}
-                  init={{
-                    height: 300,
-                    menubar: false,
-                    plugins: [
-                      "advlist", "autolink", "lists", "link",
-                      "charmap", "preview", "anchor", "searchreplace",
-                      "visualblocks", "code", "fullscreen", "insertdatetime",
-                      "media", "table", "wordcount"
-                    ],
-                    toolbar:
-                      "undo redo | bold italic forecolor | alignleft aligncenter alignright | bullist numlist outdent indent | removeformat | help",
-                    content_style: "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
-                  }}
-                  onEditorChange={(content) => setEditedTicket({ ...editedTicket, description: content })}
-                />
+              <div className="grid mt-4">
+                <fieldset className="fieldset w-full">
+                  <legend className="fieldset-legend">Description</legend>
+                  <textarea className="textarea h-30 w-full" placeholder="Description" value={editedTicket.description} onChange={(e) => setEditedTicket({ ...editedTicket, description: e.target.value })}
+                    required></textarea>
+                </fieldset>
               </div>
 
               {/* Save Button */}
@@ -320,26 +303,11 @@ function TicketModal({ ticket, onTicketUpdated }) {
               </div>
               {/* New Comment Editor Section */}
               <div className="mt-4">
-                <h4 className="text-lg font-medium mb-2">Add a Comment</h4>
-                <Editor
-                  apiKey="exntuwohcc26tmyo74spy1dxscradb69wx8dn79stb9tsqbz"
-                  onInit={(_evt, editor) => (commentEditorRef.current = editor)}
-                  value={newComment}
-                  init={{
-                    height: 150,
-                    menubar: false,
-                    plugins: [
-                      "advlist autolink lists link image charmap preview anchor",
-                      "searchreplace visualblocks code fullscreen",
-                      "insertdatetime media table paste code help wordcount",
-                    ],
-                    toolbar:
-                      "undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help",
-                    content_style:
-                      "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
-                  }}
-                  onEditorChange={(content) => setNewComment(content)}
-                />
+                <fieldset className="fieldset w-full">
+                  <legend className="fieldset-legend">Add a comment</legend>
+                  <textarea className="textarea h-30 w-full" placeholder="Comment" value={newComment} onChange={(e) => setNewComment(e.target.value)}>
+                  </textarea>
+                </fieldset>
                 <div className="mt-3">
                   <button
                     onClick={handleSubmitComment}

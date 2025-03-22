@@ -1,12 +1,15 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 import TicketModal from "./TicketModal";
+import { fetchTicketById } from "../api";
 
 function TicketsTable({ tickets, onTicketUpdated }) {
   const [selectedTicket, setSelectedTicket] = useState(null);
 
   const handleOpenModal = (ticket) => {
-    setSelectedTicket(ticket);
+    fetchTicketById(ticket.id).then((data) => {
+      setSelectedTicket(data);
+    });
     setTimeout(() => {
       const modal = document.getElementById("ticket_modal");
       if (modal) modal.showModal();

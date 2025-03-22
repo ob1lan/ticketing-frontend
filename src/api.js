@@ -97,3 +97,5 @@ export const fetchTicketTimeEntries = (ticketId) =>
 export const fetchAssignees = () => apiRequest("/accounts/");
 export const updateTicket = (ticketId, updatedData) =>
   apiRequest(`/tickets/${ticketId}/`, "PATCH", updatedData);
+export const fetchTicketById = (ticketId) =>
+  apiRequest(`/tickets/${ticketId}/`);
