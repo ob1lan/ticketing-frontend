@@ -1,16 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import ThemeSelector from "./ThemeSelector";
 import PasswordChangeForm from "./PasswordChangeForm";
 import PropTypes from "prop-types";
 
 const SettingsModal = ({ isOpen, onClose }) => {
+    const modalRef = useRef(null);
     const [success, setSuccess] = useState("");
     const [error, setError] = useState("");
 
     if (!isOpen) return null;
 
     return (
-        <dialog id="settings_modal" className="modal modal-open">
+        <dialog ref={modalRef} id="settings_modal" className="modal modal-open">
             <form method="dialog" className="modal-backdrop" onClick={onClose}>
                 <button>close</button>
             </form>
@@ -34,7 +35,10 @@ const SettingsModal = ({ isOpen, onClose }) => {
                     <PasswordChangeForm
                         onSuccess={setSuccess}
                         onError={setError}
-                        onClose={onClose}
+                        onClose={() => {
+                            modalRef.current?.close();
+                            onClose();
+                        }}
                     />
                 </fieldset>
             </div>

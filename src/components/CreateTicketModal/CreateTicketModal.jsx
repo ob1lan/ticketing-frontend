@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { fetchCompanies, createTicket } from "../../api";
 import CreateTicketForm from "./CreateTicketForm";
 import PropTypes from "prop-types";
 
 const CreateTicketModal = ({ isOpen, onClose, onTicketCreated, user }) => {
+    const modalRef = useRef(null);
     const [formData, setFormData] = useState({
         title: "",
         description: "",
@@ -52,7 +53,10 @@ const CreateTicketModal = ({ isOpen, onClose, onTicketCreated, user }) => {
     if (!isOpen) return null;
 
     return (
-        <dialog id="create_ticket_modal" className="modal modal-open">
+        <dialog ref={modalRef} id="create_ticket_modal" className="modal modal-open">
+            <form method="dialog" className="modal-backdrop" onClick={onClose}>
+                <button>close</button>
+            </form>
             <div className="modal-box w-11/12 max-w-3xl">
                 <fieldset className="fieldset bg-base-100 border border-base-300 p-6 rounded-box shadow-md">
                     <legend className="fieldset-legend text-lg font-bold">Create New Ticket</legend>
@@ -63,7 +67,10 @@ const CreateTicketModal = ({ isOpen, onClose, onTicketCreated, user }) => {
                         formData={formData}
                         onChange={handleChange}
                         onSubmit={handleSubmit}
-                        onClose={onClose}
+                        onClose={() => {
+                            modalRef.current?.close();
+                            onClose();
+                        }}
                     />
                 </fieldset>
             </div>

@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { fetchProfile } from "../../api";
 import ProfileForm from "./ProfileForm";
 import PropTypes from "prop-types";
 
 
 const ProfileModal = ({ user, isOpen, onClose }) => {
+    const modalRef = useRef(null);
     const [profile, setProfile] = useState({
         username: "",
         first_name: "",
@@ -75,7 +76,7 @@ const ProfileModal = ({ user, isOpen, onClose }) => {
     if (!isOpen) return null;
 
     return (
-        <dialog id="profile_modal" className="modal modal-open">
+        <dialog ref={modalRef} id="profile_modal" className="modal modal-open">
             <form method="dialog" className="modal-backdrop" onClick={onClose}>
                 <button>close</button>
             </form>
@@ -89,7 +90,10 @@ const ProfileModal = ({ user, isOpen, onClose }) => {
                         handleChange={handleChange}
                         handleAvatarURLChange={handleAvatarURLChange}
                         handleSubmit={handleSubmit}
-                        onClose={onClose}
+                        onClose={() => {
+                            modalRef.current?.close();
+                            onClose();
+                        }}
                         success={success}
                         error={error}
                         loading={loading}
