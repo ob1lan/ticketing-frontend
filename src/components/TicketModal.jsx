@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import DOMPurify from "dompurify";
 import { updateTicket, fetchTicketComments, postTicketComment, fetchTicketTimeEntries, fetchAssignees } from "../api";
 
 
-function TicketModal({ ticket, onTicketUpdated }) {
+function TicketModal({ ticket, onTicketUpdated, onCloseModal }) {
   const [activeTab, setActiveTab] = useState("details");
   const [comments, setComments] = useState([]);
   const [loadingComments, setLoadingComments] = useState(false);
@@ -24,9 +24,14 @@ function TicketModal({ ticket, onTicketUpdated }) {
     assignee: ticket?.assignee || "",
     description: ticket?.description || "",
   });
+  const modalRef = useRef(null);
 
   useEffect(() => {
     if (!ticket) return;
+
+    if (ticket && modalRef.current) {
+      modalRef.current.showModal();
+    }
 
     setEditedTicket({
       title: ticket.title,
@@ -56,6 +61,7 @@ function TicketModal({ ticket, onTicketUpdated }) {
       const updatedTicket = await updateTicket(ticket.id, editedTicket);
       setEditedTicket(updatedTicket);
       onTicketUpdated(updatedTicket);
+      setTimeout(onCloseModal, 1000);
     } catch (error) {
       console.error("Failed to update ticket", error);
     }
@@ -121,7 +127,7 @@ function TicketModal({ ticket, onTicketUpdated }) {
   if (!ticket) return null;
 
   return (
-    <dialog id="ticket_modal" className="modal">
+    <dialog ref={modalRef} id="ticket_modal" className="modal">
       <div className="modal-box container">
         <h3 className="font-bold text-lg">
           <span
@@ -362,7 +368,7 @@ function TicketModal({ ticket, onTicketUpdated }) {
 
         {/* Modal Close Button */}
         <div className="modal-action">
-          <form method="dialog">
+          <form method="dialog" onSubmit={onCloseModal}>
             <button className="btn">Close</button>
           </form>
         </div>
