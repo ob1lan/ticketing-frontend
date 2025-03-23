@@ -1,12 +1,14 @@
 import React from "react";
 import PropTypes from "prop-types";
+import { TICKET_TYPES, TICKET_PRIORITIES } from "../../utils/constants";
 
 const CreateTicketFields = ({ user, companies, formData, onChange }) => (
   <>
     {user.role === "admin" && (
       <div className="form-control">
-        <label className="fieldset-label">Company</label>
+        <label htmlFor="company" className="fieldset-label">Company</label>
         <select
+          id="company"
           className="select select-bordered w-full"
           value={formData.company}
           onChange={(e) => onChange("company", e.target.value)}
@@ -23,8 +25,9 @@ const CreateTicketFields = ({ user, companies, formData, onChange }) => (
     )}
 
     <div className="form-control">
-      <label className="fieldset-label">Title</label>
+      <label htmlFor="title" className="fieldset-label">Title</label>
       <input
+        id="title"
         type="text"
         className="input input-bordered w-full"
         placeholder="Ticket Title"
@@ -35,8 +38,9 @@ const CreateTicketFields = ({ user, companies, formData, onChange }) => (
     </div>
 
     <div className="form-control">
-      <label className="fieldset-label">Description</label>
+      <label htmlFor="description" className="fieldset-label">Description</label>
       <textarea
+        id="description"
         className="textarea textarea-bordered w-full"
         placeholder="Ticket Description"
         value={formData.description}
@@ -46,28 +50,35 @@ const CreateTicketFields = ({ user, companies, formData, onChange }) => (
     </div>
 
     <div className="form-control">
-      <label className="fieldset-label">Priority</label>
+      <label htmlFor="priority" className="fieldset-label">Priority</label>
       <select
+        id="priority"
         className="select select-bordered w-full"
         value={formData.priority}
         onChange={(e) => onChange("priority", e.target.value)}
       >
-        <option value="low">Low</option>
-        <option value="medium">Medium</option>
-        <option value="high">High</option>
+        {Object.entries(TICKET_PRIORITIES).map(([value, label]) => (
+          <option key={value} value={value}>
+            {label}
+          </option>
+        ))}
+
       </select>
     </div>
 
     <div className="form-control">
-      <label className="fieldset-label">Type</label>
+      <label htmlFor="type" className="fieldset-label">Type</label>
       <select
+        id="type"
         className="select select-bordered w-full"
         value={formData.type}
         onChange={(e) => onChange("type", e.target.value)}
       >
-        <option value="service_request">Service Request</option>
-        <option value="change_request">Change Request</option>
-        <option value="incident">Incident</option>
+        {Object.entries(TICKET_TYPES).map(([value, label]) => (
+          <option key={value} value={value}>
+            {label}
+          </option>
+        ))}
       </select>
     </div>
   </>

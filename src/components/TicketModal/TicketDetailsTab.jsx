@@ -1,5 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
+import { TICKET_STATUSES, TICKET_TYPES, TICKET_PRIORITIES } from "../../utils/constants";
 
 function TicketDetailsTab({ editedTicket, setEditedTicket, assignees }) {
     return (
@@ -14,9 +15,11 @@ function TicketDetailsTab({ editedTicket, setEditedTicket, assignees }) {
                         onChange={(e) => setEditedTicket({ ...editedTicket, type: e.target.value })}
                         required
                     >
-                        <option value="service_request">📝 Service Request</option>
-                        <option value="change_request">🔧 Change Request</option>
-                        <option value="incident">⚠️ Incident</option>
+                        {Object.entries(TICKET_TYPES).map(([value, label]) => (
+                            <option key={value} value={value}>
+                                {label}
+                            </option>
+                        ))}
                     </select>
                 </label>
 
@@ -29,9 +32,11 @@ function TicketDetailsTab({ editedTicket, setEditedTicket, assignees }) {
                         onChange={(e) => setEditedTicket({ ...editedTicket, priority: e.target.value })}
                         required
                     >
-                        <option value="low">🟢 Low</option>
-                        <option value="medium">🟡 Medium</option>
-                        <option value="high">🔴 High</option>
+                        {Object.entries(TICKET_PRIORITIES).map(([value, label]) => (
+                            <option key={value} value={value}>
+                                {label}
+                            </option>
+                        ))}
                     </select>
                 </label>
 
@@ -43,11 +48,11 @@ function TicketDetailsTab({ editedTicket, setEditedTicket, assignees }) {
                         value={editedTicket.status}
                         onChange={(e) => setEditedTicket({ ...editedTicket, status: e.target.value })}
                     >
-                        <option value="open">🛠️ Open</option>
-                        <option value="pending">⏳ Pending</option>
-                        <option value="in_progress">🚧 In Progress</option>
-                        <option value="resolved">✅ Resolved</option>
-                        <option value="closed">🔒 Closed</option>
+                        {Object.entries(TICKET_STATUSES).map(([value, label]) => (
+                            <option key={value} value={value}>
+                                {label}
+                            </option>
+                        ))}
                     </select>
                 </label>
 

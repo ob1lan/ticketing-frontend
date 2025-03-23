@@ -33,7 +33,7 @@ function TicketsTable({ tickets, onTicketUpdated }) {
                         <th>Reference</th>
                         <th>Title</th>
                         <th className="text-center">Requester</th>
-                        <th className="text-center">Priority</th>
+                        <th>Priority</th>
                         <th className="text-center">Assignee</th>
                         <th></th>
                     </tr>
