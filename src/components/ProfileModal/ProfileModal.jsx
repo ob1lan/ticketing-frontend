@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { fetchProfile } from "../../api";
+import { fetchProfile, updateProfile } from "../../api";
 import ProfileForm from "./ProfileForm";
 import PropTypes from "prop-types";
 
@@ -49,19 +49,7 @@ const ProfileModal = ({ user, isOpen, onClose }) => {
         setSuccess("");
 
         try {
-            const token = localStorage.getItem("accessToken");
-            const res = await fetch("http://127.0.0.1:8000/accounts/profile/", {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify(profile),
-            });
-
-            if (!res.ok) throw new Error("Failed to update profile");
-
-            const updatedData = await res.json();
+            const updatedData = await updateProfile(profile);
             setProfile(updatedData);
             setSuccess("Profile updated successfully!");
             setTimeout(onClose, 2000);

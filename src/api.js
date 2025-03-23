@@ -57,6 +57,8 @@ const apiRequest = async (
 // API Functions using `apiRequest`
 
 export const fetchProfile = () => apiRequest("/accounts/profile/");
+export const updateProfile = (profileData) =>
+  apiRequest("/accounts/profile/", "PATCH", profileData);
 export const fetchTickets = (
   pageOrUrl = 1,
   status = "",
