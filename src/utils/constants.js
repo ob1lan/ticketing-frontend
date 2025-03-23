@@ -28,6 +28,12 @@ export const TICKET_TYPES = {
   incident: "⚠️ Incident",
 };
 
+export const TICKET_TYPE_BADGE_CLASSES = {
+  service_request: "badge-info badge-soft",
+  change_request: "badge-warning badge-soft",
+  incident: "badge-error badge-soft",
+};
+
 export const TICKET_PRIORITIES = {
   low: "Low",
   medium: "Medium",

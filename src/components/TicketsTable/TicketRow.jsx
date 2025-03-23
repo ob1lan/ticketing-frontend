@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { STATUS_LABELS, STATUS_BADGES, TICKET_PRIORITIES, TICKET_TYPES, TICKET_PRIORITY_CLASSES } from "../../utils/constants";
+import { STATUS_LABELS, STATUS_BADGES, TICKET_PRIORITIES, TICKET_TYPES, TICKET_PRIORITY_CLASSES, TICKET_TYPE_BADGE_CLASSES } from "../../utils/constants";
 
 function TicketRow({ ticket, onClickDetails }) {
   const badgeClass = STATUS_BADGES[ticket.status] || "badge-ghost";
@@ -27,7 +27,9 @@ function TicketRow({ ticket, onClickDetails }) {
       <td>
         {ticket.title}
         <br />
-        <span className="badge badge-ghost badge-sm">{typeLabel}</span>
+        <span className={`badge badge-sm ${TICKET_TYPE_BADGE_CLASSES[ticket.type] || "badge-ghost"}`}>
+          {TICKET_TYPES[ticket.type] || ticket.type}
+        </span>
       </td>
       <td className="text-center">{ticket.created_by_fullname}</td>
       <td>
