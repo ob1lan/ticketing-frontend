@@ -1,11 +1,12 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { STATUS_LABELS, STATUS_BADGES, TICKET_PRIORITIES, TICKET_TYPES } from "../../utils/constants";
+import { STATUS_LABELS, STATUS_BADGES, TICKET_PRIORITIES, TICKET_TYPES, TICKET_PRIORITY_CLASSES } from "../../utils/constants";
 
 function TicketRow({ ticket, onClickDetails }) {
   const badgeClass = STATUS_BADGES[ticket.status] || "badge-ghost";
   const statusLabel = STATUS_LABELS[ticket.status] || ticket.status;
   const priorityLabel = TICKET_PRIORITIES[ticket.priority] || ticket.priority;
+  const priorityClass = TICKET_PRIORITY_CLASSES[ticket.priority];
   const typeLabel = TICKET_TYPES[ticket.type] || ticket.type;
 
   return (
@@ -29,7 +30,12 @@ function TicketRow({ ticket, onClickDetails }) {
         <span className="badge badge-ghost badge-sm">{typeLabel}</span>
       </td>
       <td className="text-center">{ticket.created_by_fullname}</td>
-      <td>{priorityLabel}</td>
+      <td>
+        <div className="flex items-center gap-2">
+          <div className={`status ${priorityClass}`} aria-label={priorityLabel} />
+          {priorityLabel}
+        </div>
+      </td>
       <td className="text-center">{ticket.assignee_fullname || "None"}</td>
       <th>
         <button className="btn btn-soft btn-primary btn-xs" onClick={onClickDetails}>details</button>

@@ -29,7 +29,13 @@ export const TICKET_TYPES = {
 };
 
 export const TICKET_PRIORITIES = {
-  low: "🟢 Low",
-  medium: "🟡 Medium",
-  high: "🔴 High",
+  low: "Low",
+  medium: "Medium",
+  high: "High",
+};
+
+export const TICKET_PRIORITY_CLASSES = {
+  low: "status-success",
+  medium: "status-warning",
+  high: "status-error",
 };
