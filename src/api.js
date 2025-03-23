@@ -101,3 +101,5 @@ export const updateTicket = (ticketId, updatedData) =>
   apiRequest(`/tickets/${ticketId}/`, "PATCH", updatedData);
 export const fetchTicketById = (ticketId) =>
   apiRequest(`/tickets/${ticketId}/`);
+export const fetchTicketHistory = (ticketId) =>
+  apiRequest(`/tickets/${ticketId}/history/`);

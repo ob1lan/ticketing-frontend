@@ -6,11 +6,13 @@ import {
   postTicketComment,
   fetchTicketTimeEntries,
   fetchAssignees,
+  fetchTicketHistory,
 } from "../../api";
 
 import TicketDetailsTab from "./TicketDetailsTab";
 import TicketCommentsTab from "./TicketCommentsTab";
 import TicketTimeSpentTab from "./TicketTimeSpentTab";
+import TicketHistoryTab from "./TicketHistoryTab";
 import { STATUS_BADGES, STATUS_LABELS } from "../../utils/constants";
 
 function TicketModal({ ticket, onTicketUpdated }) {
@@ -18,16 +20,15 @@ function TicketModal({ ticket, onTicketUpdated }) {
   const [comments, setComments] = useState([]);
   const [loadingComments, setLoadingComments] = useState(false);
   const [errorComments, setErrorComments] = useState(null);
-
   const [timeEntries, setTimeEntries] = useState([]);
   const [loadingTime, setLoadingTime] = useState(false);
   const [errorTime, setErrorTime] = useState(null);
-
   const [assignees, setAssignees] = useState([]);
   const [newComment, setNewComment] = useState("");
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
   const [errorPostingComment, setErrorPostingComment] = useState(null);
-
+  const [history, setHistory] = useState([]);
+  const [loadingHistory, setLoadingHistory] = useState(false);
   const [editedTicket, setEditedTicket] = useState({
     title: ticket?.title || "",
     priority: ticket?.priority || "low",
@@ -60,6 +61,13 @@ function TicketModal({ ticket, onTicketUpdated }) {
       fetchComments(ticket.id);
     } else if (activeTab === "timespent") {
       fetchTimeEntries(ticket.id);
+    }
+    else if (activeTab === "history") {
+      setLoadingHistory(true);
+      fetchTicketHistory(ticket.id)
+        .then(data => setHistory(data.results || []))
+        .catch(console.error)
+        .finally(() => setLoadingHistory(false));
     }
   }, [ticket, activeTab]);
 
@@ -145,18 +153,19 @@ function TicketModal({ ticket, onTicketUpdated }) {
 
         {/* Tabs */}
         <div role="tablist" className="tabs tabs-border mt-4">
-          {["details", "comments", "timespent"].map((tab) => (
+          {["details", "comments", "timespent", "history"].map((tab) => (
             <a
               key={tab}
               role="tab"
               className={`tab ${activeTab === tab ? "tab-active" : ""}`}
               onClick={() => setActiveTab(tab)}
             >
-              {tab === "details"
-                ? "Description"
-                : tab === "comments"
-                  ? "Comments"
-                  : "Time Spent"}
+              {{
+                details: "Description",
+                comments: "Comments",
+                timespent: "Time Spent",
+                history: "History",
+              }[tab]}
             </a>
           ))}
         </div>
@@ -202,6 +211,15 @@ function TicketModal({ ticket, onTicketUpdated }) {
             />
           )}
         </div>
+
+        {activeTab === "history" && (
+          loadingHistory ? <p>Loading history...</p> : (
+            <TicketHistoryTab
+              history={history}
+              formatTimestamp={formatTimestamp}
+            />
+          )
+        )}
 
         <div className="modal-action">
           <form method="dialog">
