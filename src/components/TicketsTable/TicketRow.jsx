@@ -7,7 +7,6 @@ function TicketRow({ ticket, onClickDetails }) {
   const statusLabel = STATUS_LABELS[ticket.status] || ticket.status;
   const priorityLabel = TICKET_PRIORITIES[ticket.priority] || ticket.priority;
   const priorityClass = TICKET_PRIORITY_CLASSES[ticket.priority];
-  const typeLabel = TICKET_TYPES[ticket.type] || ticket.type;
 
   return (
     <tr key={ticket.unique_reference} className="hover">
