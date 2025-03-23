@@ -32,7 +32,14 @@ function TicketRow({ ticket, onClickDetails }) {
       <td className="text-center">{ticket.created_by_fullname}</td>
       <td>
         <div className="flex items-center gap-2">
-          <div className={`status ${priorityClass}`} aria-label={priorityLabel} />
+          {ticket.priority === "high" ? (
+            <div className="inline-grid *:[grid-area:1/1]">
+              <div className="status status-error animate-ping" />
+              <div className="status status-error" />
+            </div>
+          ) : (
+            <div className={`status ${priorityClass}`} aria-label={priorityLabel} />
+          )}
           {priorityLabel}
         </div>
       </td>
