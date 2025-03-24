@@ -21,7 +21,7 @@ function Navbar({ user, profile, onOpenProfile, onOpenSettings }) {
             tabIndex={0}
             className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
             <li><a>Tickets</a></li>
-            <li><a>Companies</a></li>
+            <li><a href="/companies">Companies</a></li>
             <li><a>About</a></li>
           </ul>
         </div>

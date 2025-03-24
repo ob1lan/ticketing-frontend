@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import Companies from "./pages/Companies";
 import ProtectedRoute from "./middleware/ProtectedRoute";
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
         {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/companies" element={<Companies />} />
         </Route>
 
         {/* Default Route Redirects to Login */}
