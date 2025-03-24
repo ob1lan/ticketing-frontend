@@ -105,3 +105,7 @@ export const fetchTicketHistory = (ticketId) =>
   apiRequest(`/tickets/${ticketId}/history/`);
 export const updateCompany = (companyId, updatedData) =>
   apiRequest(`/companies/${companyId}/`, "PATCH", updatedData);
+export const createCompany = (companyData) =>
+  apiRequest("/companies/", "POST", companyData);
+export const deleteCompany = (companyId) =>
+  apiRequest(`/companies/${companyId}/`, "DELETE");

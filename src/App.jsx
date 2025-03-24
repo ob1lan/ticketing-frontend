@@ -4,6 +4,7 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Companies from "./pages/Companies";
 import ProtectedRoute from "./middleware/ProtectedRoute";
+import Layout from "./layout/Layout";
 
 function App() {
   useEffect(() => {
@@ -17,8 +18,16 @@ function App() {
 
         {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/companies" element={<Companies />} />
+          <Route path="/dashboard" element={
+            <Layout>
+              <Dashboard />
+            </Layout>
+          } />
+          <Route path="/companies" element={
+            <Layout>
+              <Companies />
+            </Layout>
+          } />
         </Route>
 
         {/* Default Route Redirects to Login */}

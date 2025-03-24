@@ -118,7 +118,7 @@ function Dashboard() {
 
   return (
     <>
-      <Navbar onOpenProfile={() => setIsProfileOpen(true)} onOpenSettings={() => setIsSettingsOpen(true)} profile={profile} user={user} />
+      {/* <Navbar onOpenProfile={() => setIsProfileOpen(true)} onOpenSettings={() => setIsSettingsOpen(true)} profile={profile} user={user} /> */}
       {!loadingCompanies && companies.length === 0 && (
         <div className="alert alert-warning shadow-lg mb-4">
           <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
@@ -215,7 +215,7 @@ function Dashboard() {
         onTicketCreated={handleTicketCreated}
         user={user}
       />
-      <Footer />
+      {/* <Footer /> */}
       {isProfileOpen && <ProfileModal isOpen={isProfileOpen} onClose={() => setIsProfileOpen(false)} user={user} />}
       {isSettingsOpen && <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />}
     </>

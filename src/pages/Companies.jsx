@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { fetchCompanies } from "../api";
-import { useNavigate } from "react-router-dom";
+import { fetchCompanies, createCompany, updateCompany } from "../api";
 import { CompanyModal } from "../components/Companies";
 
 
