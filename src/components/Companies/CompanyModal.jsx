@@ -16,10 +16,19 @@ const CompanyModal = ({ isOpen, onClose, onSubmit, initialData = {}, loading, er
 
     useEffect(() => {
         if (isOpen) {
-            setCompany(initialData);
-            setLogoPreview(initialData.logo || "https://api.dicebear.com/7.x/identicon/svg?seed=company");
+            const defaultData = {
+                name: "",
+                initials: "",
+                logo: "",
+                address: "",
+                contact_phone: "",
+            };
+            const mergedData = { ...defaultData, ...initialData };
+            setCompany(mergedData);
+            setLogoPreview(mergedData.logo || "https://api.dicebear.com/7.x/identicon/svg?seed=company");
         }
     }, [isOpen, initialData]);
+
 
     const handleChange = (e) => {
         setCompany({ ...company, [e.target.name]: e.target.value });

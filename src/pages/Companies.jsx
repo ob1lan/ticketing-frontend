@@ -7,14 +7,11 @@ import { CompanyModal } from "../components/Companies";
 function Companies() {
     const [companies, setCompanies] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [selectedCompany, setSelectedCompany] = useState(null);
-    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingCompany, setEditingCompany] = useState(null);
     const [modalError, setModalError] = useState("");
     const [modalSuccess, setModalSuccess] = useState("");
     const [modalLoading, setModalLoading] = useState(false);
-    const navigate = useNavigate();
 
     useEffect(() => {
         fetchCompanies()
@@ -23,10 +20,17 @@ function Companies() {
             .finally(() => setLoading(false));
     }, []);
 
+    const fetchAllCompanies = () => {
+        fetchCompanies()
+            .then((data) => setCompanies(data.results || []))
+            .catch((err) => console.error("Failed to fetch companies", err))
+            .finally(() => setLoading(false));
+    };
+
 
     const handleEditClick = (company) => {
-        setSelectedCompany(company);
-        setIsEditModalOpen(true);
+        setEditingCompany(company);
+        setIsModalOpen(true);
     };
 
     const handleModalSubmit = async (companyData) => {
@@ -126,21 +130,16 @@ function Companies() {
                     </table>
                 </div>
             )}
-            <EditCompanyModal
-                company={selectedCompany}
-                isOpen={isEditModalOpen}
-                onClose={() => setIsEditModalOpen(false)}
-                onCompanyUpdated={handleUpdateCompany}
-            />
             <CompanyModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 onSubmit={handleModalSubmit}
-                initialData={editingCompany}
+                initialData={editingCompany || {}}
                 loading={modalLoading}
                 error={modalError}
                 success={modalSuccess}
             />
+
         </div>
     );
 }
