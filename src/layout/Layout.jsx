@@ -15,18 +15,15 @@ function Layout({ children }) {
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetchProfile().then(setProfile).catch(console.error);
-
         fetchProfile()
             .then((data) => {
                 setProfile(data);
-                setUser(data);
             })
             .catch((err) => {
                 console.error("Failed to fetch profile:", err);
                 navigate("/login", { replace: true });
             });
-    }, []);
+    }, [navigate]);
 
     return (
         <>

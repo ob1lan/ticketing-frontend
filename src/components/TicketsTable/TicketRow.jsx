@@ -14,7 +14,7 @@ function TicketRow({ ticket, onClickDetails }) {
         <div className="flex items-center gap-3">
           <div className="avatar">
             <div className="mask mask-squircle h-12 w-12">
-              <img src={ticket.company_logo} alt="Company Logo" />
+              <img src={ticket.company_logo || "https://www.svgrepo.com/show/366275/missing-image.svg"} alt="Company Logo" />
             </div>
           </div>
           <div>
