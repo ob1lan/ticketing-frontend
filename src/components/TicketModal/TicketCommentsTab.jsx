@@ -12,7 +12,8 @@ function TicketCommentsTab({
   isSubmittingComment,
   errorPostingComment,
   handleSubmitComment,
-  formatTimestamp
+  formatTimestamp,
+  view
 }) {
   return (
     <>
@@ -20,7 +21,7 @@ function TicketCommentsTab({
         {loadingComments && <p>Loading comments...</p>}
         {errorComments && <p className="text-error">{errorComments}</p>}
         {comments.length === 0 && !loadingComments && <p>No comments yet.</p>}
-        {comments.map((comment) => (
+        {view === "chat" && comments.map((comment) => (
           <div key={comment.id} className={`chat ${comment.author_role === "admin" ? "chat-end" : "chat-start"}`}>
             <div className="chat-image avatar avatar-rounded">
               <div className={comment?.author_role === "admin"
@@ -43,14 +44,44 @@ function TicketCommentsTab({
             />
           </div>
         ))}
+        {view === "card" && comments.map((comment) => (
+          <div key={comment.id} className="card bg-base-200 shadow-md mb-4">
+            <div className="card-body">
+              <div className="flex justify-between">
+
+                <div className="font-bold">
+                  <div className="chat-image avatar avatar-rounded">
+                    <div className={comment?.author_role === "admin"
+                      ? "mr-2 ring-warning ring-offset-base-100 w-8 rounded-full ring ring-offset-2"
+                      : "mr-2 ring-primary ring-offset-base-100 w-8 rounded-full ring ring-offset-2"
+                    }>
+                      <img
+                        alt={comment.author_fullName}
+                        src={comment?.author_avatar || `https://api.dicebear.com/7.x/identicon/svg?seed=username`}
+                      />
+                    </div>
+                  </div>
+                  {""}Comment from {comment.author_fullName}
+                </div>
+                <div className="text-xs opacity-50">
+                  {formatTimestamp(comment.created_at)}
+                </div>
+              </div>
+              <div
+                className="text-left whitespace-pre-wrap mt-2"
+                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(comment.message) }}
+              />
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* New Comment Editor Section */}
-      <div className="mt-4">
+      <div className="mt-2">
         <fieldset className="fieldset w-full">
           <legend className="fieldset-legend">Add a comment</legend>
           <textarea
-            className="textarea h-30 w-full"
+            className="textarea w-full"
             placeholder="Comment"
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
@@ -81,6 +112,7 @@ TicketCommentsTab.propTypes = {
   errorPostingComment: PropTypes.string,
   handleSubmitComment: PropTypes.func.isRequired,
   formatTimestamp: PropTypes.func.isRequired,
+  view: PropTypes.string.isRequired
 };
 
 export default TicketCommentsTab;

@@ -29,6 +29,7 @@ function TicketModal({ ticket, onTicketUpdated }) {
   const [errorPostingComment, setErrorPostingComment] = useState(null);
   const [history, setHistory] = useState([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
+  const [commentsView, setCommentsView] = useState("chat");
   const [editedTicket, setEditedTicket] = useState({
     title: ticket?.title || "",
     priority: ticket?.priority || "low",
@@ -188,17 +189,31 @@ function TicketModal({ ticket, onTicketUpdated }) {
           )}
 
           {activeTab === "comments" && (
-            <TicketCommentsTab
-              comments={comments}
-              newComment={newComment}
-              setNewComment={setNewComment}
-              loadingComments={loadingComments}
-              errorComments={errorComments}
-              isSubmittingComment={isSubmittingComment}
-              errorPostingComment={errorPostingComment}
-              handleSubmitComment={handleSubmitComment}
-              formatTimestamp={formatTimestamp}
-            />
+            <>
+              <div className="flex justify-end mb-2">
+                <button
+                  className="btn btn-sm btn-outline"
+                  onClick={() =>
+                    setCommentsView((prev) => (prev === "chat" ? "card" : "chat"))
+                  }
+                >
+                  {commentsView === "chat" ? "Switch to Card View" : "Switch to Chat View"}
+                </button>
+              </div>
+
+              <TicketCommentsTab
+                comments={comments}
+                newComment={newComment}
+                setNewComment={setNewComment}
+                loadingComments={loadingComments}
+                errorComments={errorComments}
+                isSubmittingComment={isSubmittingComment}
+                errorPostingComment={errorPostingComment}
+                handleSubmitComment={handleSubmitComment}
+                formatTimestamp={formatTimestamp}
+                view={commentsView}
+              />
+            </>
           )}
 
           {activeTab === "timespent" && (
