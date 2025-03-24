@@ -8,7 +8,7 @@ import Footer from "../components/Footer";
 import CounterCards from "../components/CounterCards";
 import CreateTicketModal from "../components/CreateTicketModal";
 import { jwtDecode } from "jwt-decode";
-import { fetchProfile, fetchTickets } from "../api";
+import { fetchProfile, fetchTickets, fetchCompanies } from "../api";
 
 function Dashboard() {
   const [tickets, setTickets] = useState([]);
@@ -21,6 +21,8 @@ function Dashboard() {
   const [statusFilter, setStatusFilter] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [includeClosed, setIncludeClosed] = useState(false);
+  const [companies, setCompanies] = useState([]);
+  const [loadingCompanies, setLoadingCompanies] = useState(true);
 
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
@@ -30,6 +32,11 @@ function Dashboard() {
 
   useEffect(() => {
     fetchProfile().then(data => setProfile(data));
+
+    fetchCompanies()
+      .then((data) => setCompanies(data.results || []))
+      .catch((err) => console.error("Failed to fetch companies", err))
+      .finally(() => setLoadingCompanies(false));
   }, []);
 
   const handleToggleClosed = () => {
@@ -112,10 +119,22 @@ function Dashboard() {
   return (
     <>
       <Navbar onOpenProfile={() => setIsProfileOpen(true)} onOpenSettings={() => setIsSettingsOpen(true)} profile={profile} user={user} />
+      {!loadingCompanies && companies.length === 0 && (
+        <div className="alert alert-warning shadow-lg mb-4">
+          <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01M4.93 4.93l14.14 14.14M12 2a10 10 0 100 20 10 10 0 000-20z" />
+          </svg>
+          <div>
+            <h3 className="font-bold">No company found!</h3>
+            <div className="text-xs">Please create at least one company in the admin panel to use the ticketing system.</div>
+          </div>
+        </div>
+      )}
+
       <div className="divider">Stats</div>
       <CounterCards />
       <div className="divider">
-        <button className="btn btn-soft btn-success" onClick={handleOpenModal}>New Ticket</button>
+        <button className="btn btn-soft btn-success" onClick={handleOpenModal} disabled={companies.length === 0}>New Ticket</button>
         <div className="dropdown dropdown-end">
           <div tabIndex={0} role="button" className="btn">
             Status: {statusFilter || "Not Closed"} ▼
@@ -156,25 +175,40 @@ function Dashboard() {
           </label>
         </fieldset>
       </div>
-      <TicketsTable tickets={tickets} onTicketUpdated={handleTicketUpdated} />
-      {/* Pagination Controls */}
-      <div className="join p-2">
-        <button
-          className="join-item btn"
-          disabled={!prevPage}
-          onClick={() => handlePageChange(currentPage - 1)}
-        >
-          «
-        </button>
-        <span className="join-item btn">Page {currentPage} of {totalPages}</span>
-        <button
-          className="join-item btn"
-          disabled={!nextPage}
-          onClick={() => handlePageChange(currentPage + 1)}
-        >
-          »
-        </button>
-      </div>
+      {tickets.length !== 0 ? (
+        <>
+          <TicketsTable tickets={tickets} onTicketUpdated={handleTicketUpdated} />
+
+          {/* Pagination Controls */}
+          <div className="join p-2">
+            <button
+              className="join-item btn"
+              disabled={!prevPage}
+              onClick={() => handlePageChange(currentPage - 1)}
+            >
+              «
+            </button>
+            <span className="join-item btn">Page {currentPage} of {totalPages}</span>
+            <button
+              className="join-item btn"
+              disabled={!nextPage}
+              onClick={() => handlePageChange(currentPage + 1)}
+            >
+              »
+            </button>
+          </div>
+        </>
+      ) : (
+        <div className="alert alert-warning shadow-lg mt-6 mb-4">
+          <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01M4.93 4.93l14.14 14.14M12 2a10 10 0 100 20 10 10 0 000-20z" />
+          </svg>
+          <div>
+            <h3 className="font-bold">No ticket found!</h3>
+            <div className="text-xs">Make sure you created a company first, then create a new ticket.</div>
+          </div>
+        </div>
+      )}
       <CreateTicketModal
         isOpen={isCreateModalOpen}
         onClose={handleCloseModal}
