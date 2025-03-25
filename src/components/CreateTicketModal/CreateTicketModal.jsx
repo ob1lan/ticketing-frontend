@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { fetchCompanies, createTicket } from "../../api";
+import { fetchAllCompanies, createTicket } from "../../api";
 import CreateTicketForm from "./CreateTicketForm";
 import PropTypes from "prop-types";
 
@@ -17,7 +17,7 @@ const CreateTicketModal = ({ isOpen, onClose, onTicketCreated, user }) => {
 
     useEffect(() => {
         if (user?.role === "admin") {
-            fetchCompanies().then((data) => setCompanies(data.results));
+            fetchAllCompanies().then(setCompanies).catch(console.error);
         }
     }, [user]);
 

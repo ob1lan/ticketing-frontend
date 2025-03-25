@@ -10,17 +10,24 @@ function Companies() {
     const [modalError, setModalError] = useState("");
     const [modalSuccess, setModalSuccess] = useState("");
     const [modalLoading, setModalLoading] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [nextPage, setNextPage] = useState(null);
+    const [prevPage, setPrevPage] = useState(null);
 
     useEffect(() => {
-        fetchCompanies()
-            .then((data) => setCompanies(data.results || []))
-            .catch((err) => console.error("Failed to fetch companies", err))
-            .finally(() => setLoading(false));
-    }, []);
+        loadCompanies(currentPage);
+    }, [currentPage]);
 
-    const fetchAllCompanies = () => {
-        fetchCompanies()
-            .then((data) => setCompanies(data.results || []))
+    const loadCompanies = (page = 1) => {
+        setLoading(true);
+        fetchCompanies(page)
+            .then((data) => {
+                setCompanies(data.results || []);
+                setTotalPages(Math.ceil(data.count / 5));
+                setNextPage(data.next);
+                setPrevPage(data.previous);
+            })
             .catch((err) => console.error("Failed to fetch companies", err))
             .finally(() => setLoading(false));
     };
@@ -40,7 +47,7 @@ function Companies() {
             }
             setTimeout(() => {
                 setIsModalOpen(false);
-                fetchAllCompanies();
+                loadCompanies(currentPage);
             }, 1000);
         } catch (err) {
             setModalError(err.message || "Failed to save company.");
@@ -48,7 +55,6 @@ function Companies() {
             setModalLoading(false);
         }
     };
-
 
     return (
         <div className="p-6">
@@ -64,68 +70,86 @@ function Companies() {
                 </button>
             </div>
 
-            {(() => {
-                if (loading) {
-                    return <div className="skeleton w-full h-32"></div>;
-                } else if (companies.length === 0) {
-                    return (
-                        <div className="alert alert-warning">
-                            <span>No companies found. Add one to get started.</span>
-                        </div>
-                    );
-                } else {
-                    return (
-                        <div className="overflow-x-auto max-w-full">
-                            <table className="table table-zebra w-full">
-                                <thead>
-                                    <tr>
-                                        <th>Logo</th>
-                                        <th>Name</th>
-                                        <th>Initials</th>
-                                        <th>Address</th>
-                                        <th>Phone</th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {companies.map((company) => (
-                                        <tr key={company.id}>
-                                            <td>
-                                                {company.logo ? (
-                                                    <div className="avatar">
-                                                        <div className="w-10 rounded">
-                                                            <img src={company.logo} alt={company.name} />
-                                                        </div>
+            {loading ? (
+                <div className="skeleton w-full h-32"></div>
+            ) : companies.length === 0 ? (
+                <div className="alert alert-warning">
+                    <span>No companies found. Add one to get started.</span>
+                </div>
+            ) : (
+                <>
+                    <div className="overflow-x-auto max-w-full">
+                        <table className="table table-zebra w-full">
+                            <thead>
+                                <tr>
+                                    <th>Logo</th>
+                                    <th>Name</th>
+                                    <th>Initials</th>
+                                    <th>Address</th>
+                                    <th>Phone</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {companies.map((company) => (
+                                    <tr key={company.id}>
+                                        <td>
+                                            {company.logo ? (
+                                                <div className="avatar">
+                                                    <div className="w-10 rounded">
+                                                        <img src={company.logo} alt={company.name} />
                                                     </div>
-                                                ) : (
-                                                    <div className="badge badge-ghost">No Logo</div>
-                                                )}
-                                            </td>
-                                            <td>{company.name}</td>
-                                            <td>{company.initials}</td>
-                                            <td>
-                                                <div className="whitespace-pre-line">{company.address}</div>
-                                            </td>
-                                            <td>{company.contact_phone || <span className="text-sm text-gray-400">N/A</span>}</td>
-                                            <td>
-                                                <button
-                                                    className="btn btn-soft btn-primary btn-xs"
-                                                    onClick={() => {
-                                                        setEditingCompany(company);
-                                                        setIsModalOpen(true);
-                                                    }}
-                                                >
-                                                    details
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    );
-                }
-            })()}
+                                                </div>
+                                            ) : (
+                                                <div className="badge badge-ghost">No Logo</div>
+                                            )}
+                                        </td>
+                                        <td>{company.name}</td>
+                                        <td>{company.initials}</td>
+                                        <td>
+                                            <div className="whitespace-pre-line">{company.address}</div>
+                                        </td>
+                                        <td>{company.contact_phone || <span className="text-sm text-gray-400">N/A</span>}</td>
+                                        <td>
+                                            <button
+                                                className="btn btn-soft btn-primary btn-xs"
+                                                onClick={() => {
+                                                    setEditingCompany(company);
+                                                    setIsModalOpen(true);
+                                                }}
+                                            >
+                                                details
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {/* ✅ Pagination Controls */}
+                    <div className="join p-2 mt-4 justify-center">
+                        <button
+                            className="join-item btn"
+                            disabled={!prevPage}
+                            onClick={() => setCurrentPage(currentPage - 1)}
+                        >
+                            «
+                        </button>
+                        <span className="join-item btn">
+                            Page {currentPage} of {totalPages}
+                        </span>
+                        <button
+                            className="join-item btn"
+                            disabled={!nextPage}
+                            onClick={() => setCurrentPage(currentPage + 1)}
+                        >
+                            »
+                        </button>
+                    </div>
+                </>
+            )}
+
             <CompanyModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
@@ -135,7 +159,6 @@ function Companies() {
                 error={modalError}
                 success={modalSuccess}
             />
-
         </div>
     );
 }

@@ -33,7 +33,7 @@ function Dashboard() {
   useEffect(() => {
     fetchProfile().then(data => setProfile(data));
 
-    fetchCompanies()
+    fetchCompanies(1)
       .then((data) => setCompanies(data.results || []))
       .catch((err) => console.error("Failed to fetch companies", err))
       .finally(() => setLoadingCompanies(false));

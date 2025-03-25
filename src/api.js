@@ -78,8 +78,22 @@ export const fetchTickets = (
 
   return apiRequest(endpoint);
 };
+export const fetchCompanies = (page = 1) =>
+  apiRequest(`/companies/?page=${page}`);
+export const fetchAllCompanies = async () => {
+  let page = 1;
+  let allResults = [];
+  let hasNext = true;
 
-export const fetchCompanies = () => apiRequest("/companies/");
+  while (hasNext) {
+    const data = await fetchCompanies(page);
+    allResults = [...allResults, ...data.results];
+    hasNext = !!data.next;
+    page += 1;
+  }
+
+  return allResults;
+};
 export const createTicket = (ticketData) =>
   apiRequest("/tickets/", "POST", ticketData);
 export const changePassword = (currentPassword, newPassword) =>
