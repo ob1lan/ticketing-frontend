@@ -33,13 +33,20 @@ function UsersPage() {
     };
 
     return (
-        <div>
-            <h1 className="text-2xl font-bold mb-4">Users</h1>
+        <>
+            <div className="divider">
+                <button
+                    className="btn btn-soft btn-primary"
+                    onClick={"#"}
+                >
+                    New User
+                </button>
+            </div>
             <UserTable users={users} onEdit={handleEdit} />
             {isModalOpen && (
                 <UserModal user={selectedUser} onClose={handleModalClose} />
             )}
-        </div>
+        </>
     );
 }
 

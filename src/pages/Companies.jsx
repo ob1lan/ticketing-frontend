@@ -59,7 +59,7 @@ function Companies() {
     };
 
     return (
-        <div className="p-6">
+        <>
             <div className="divider">
                 <button
                     className="btn btn-soft btn-primary"
@@ -129,7 +129,6 @@ function Companies() {
                         </table>
                     </div>
 
-                    {/* ✅ Pagination Controls */}
                     <div className="join p-2 mt-4 justify-center">
                         <button
                             className="join-item btn"
@@ -161,7 +160,7 @@ function Companies() {
                 error={modalError}
                 success={modalSuccess}
             />
-        </div>
+        </>
     );
 }
 

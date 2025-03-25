@@ -8,10 +8,10 @@ function UserTable({ users, onEdit }) {
       <table className="table">
         <thead>
           <tr>
-            <th>Full Name</th>
-            <th>Email</th>
-            <th>Role</th>
-            <th className="text-center">Actions</th>
+            <th className="text-center">Full Name</th>
+            <th className="text-center">Email</th>
+            <th className="text-center">Role</th>
+            <th className="text-center"></th>
           </tr>
         </thead>
         <tbody>
