@@ -111,6 +111,7 @@ export const postTicketComment = (ticketId, message) =>
 export const fetchTicketTimeEntries = (ticketId) =>
   apiRequest(`/tickets/${ticketId}/time-entries/`);
 export const fetchAssignees = () => apiRequest("/accounts/");
+export const fetchUsers = () => apiRequest("/accounts/");
 export const updateTicket = (ticketId, updatedData) =>
   apiRequest(`/tickets/${ticketId}/`, "PATCH", updatedData);
 export const fetchTicketById = (ticketId) =>
