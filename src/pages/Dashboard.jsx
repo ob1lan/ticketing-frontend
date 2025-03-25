@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Navbar from "../components/Navbar";
 import ProfileModal from "../components/ProfileModal";
 import SettingsModal from "../components/SettingsModal";
 import TicketsTable from "../components/TicketsTable";
-import Footer from "../components/Footer";
 import CounterCards from "../components/CounterCards";
 import CreateTicketModal from "../components/CreateTicketModal";
 import { jwtDecode } from "jwt-decode";
@@ -23,8 +21,6 @@ function Dashboard() {
   const [includeClosed, setIncludeClosed] = useState(false);
   const [companies, setCompanies] = useState([]);
   const [loadingCompanies, setLoadingCompanies] = useState(true);
-
-  // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [nextPage, setNextPage] = useState(null);
@@ -33,17 +29,18 @@ function Dashboard() {
   useEffect(() => {
     fetchProfile().then(data => setProfile(data));
 
-    fetchCompanies(1)
-      .then((data) => setCompanies(data.results || []))
-      .catch((err) => console.error("Failed to fetch companies", err))
-      .finally(() => setLoadingCompanies(false));
-  }, []);
+    if (user?.role === "admin") {
+      fetchCompanies(1)
+        .then((data) => setCompanies(data.results || []))
+        .catch((err) => console.error("Failed to fetch companies", err))
+        .finally(() => setLoadingCompanies(false));
+    }
+  }, [user]);
 
   const handleToggleClosed = () => {
     setIncludeClosed((prev) => !prev);
     setCurrentPage(1);
   };
-
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
@@ -97,7 +94,6 @@ function Dashboard() {
     setCurrentPage(1);
   };
 
-
   const handleOpenModal = () => {
     setIsCreateModalOpen(true);
   };
@@ -118,7 +114,6 @@ function Dashboard() {
 
   return (
     <>
-      {/* <Navbar onOpenProfile={() => setIsProfileOpen(true)} onOpenSettings={() => setIsSettingsOpen(true)} profile={profile} user={user} /> */}
       {!loadingCompanies && companies.length === 0 && (
         <div className="alert alert-warning shadow-lg mb-4">
           <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
@@ -215,7 +210,6 @@ function Dashboard() {
         onTicketCreated={handleTicketCreated}
         user={user}
       />
-      {/* <Footer /> */}
       {isProfileOpen && <ProfileModal isOpen={isProfileOpen} onClose={() => setIsProfileOpen(false)} user={user} />}
       {isSettingsOpen && <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />}
     </>

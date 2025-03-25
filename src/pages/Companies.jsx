@@ -48,7 +48,9 @@ function Companies() {
             setTimeout(() => {
                 setIsModalOpen(false);
                 loadCompanies(currentPage);
-            }, 1000);
+                setModalSuccess("");
+                setModalError("");
+            }, 1500);
         } catch (err) {
             setModalError(err.message || "Failed to save company.");
         } finally {
