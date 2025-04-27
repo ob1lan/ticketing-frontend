@@ -41,6 +41,16 @@ const ProfileForm = ({
         </div>
 
         <div className="form-control">
+            <label className="fieldset-label">Company</label>
+            <input
+                type="text"
+                className="input input-bordered w-full"
+                value={profile.company || "None Set"}
+                disabled
+            />
+        </div>
+
+        <div className="form-control">
             <label className="fieldset-label">Email</label>
             <input
                 type="email"

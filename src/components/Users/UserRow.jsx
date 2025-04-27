@@ -6,6 +6,7 @@ function UserRow({ user, onEdit }) {
         <tr>
             <td className="text-center">{user.first_name} {user.last_name}</td>
             <td className="text-center">{user.email}</td>
+            <td className="text-center">{user.company_name || "None Set"}</td>
             <td className="text-center">
                 <span className={`badge ${user.role === "admin" ? "badge-warning" : "badge-primary"}`}>
                     {user.role}

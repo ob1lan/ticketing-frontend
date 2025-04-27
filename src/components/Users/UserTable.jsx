@@ -10,6 +10,7 @@ function UserTable({ users, onEdit }) {
           <tr>
             <th className="text-center">Full Name</th>
             <th className="text-center">Email</th>
+            <th className="text-center">Company</th>
             <th className="text-center">Role</th>
             <th className="text-center"></th>
           </tr>
