@@ -45,7 +45,7 @@ const ProfileForm = ({
             <input
                 type="text"
                 className="input input-bordered w-full"
-                value={profile.company || "None Set"}
+                value={profile.company_name || "None Set"}
                 disabled
             />
         </div>
