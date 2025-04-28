@@ -17,13 +17,15 @@ function UsersPage() {
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
 
-    // Load the list when the page loads (and after saves/deletes)
+    // loadUsers now safely handles either {results:[…]} or plain […]
     const loadUsers = async () => {
         try {
             const data = await fetchUsers();
-            setUsers(data.results);
+            const list = Array.isArray(data) ? data : data.results ?? [];
+            setUsers(list);
         } catch (err) {
             console.error("Failed to load users:", err);
+            setUsers([]); // ensure we never pass undefined into the table
         }
     };
 
@@ -31,7 +33,6 @@ function UsersPage() {
         loadUsers();
     }, []);
 
-    // Open modal to create a new user
     const handleNew = () => {
         setInitialData({});    // empty = isNew
         setError("");
@@ -39,7 +40,6 @@ function UsersPage() {
         setModalOpen(true);
     };
 
-    // Open modal to edit an existing user
     const handleEdit = (user) => {
         setInitialData(user);
         setError("");
@@ -47,12 +47,10 @@ function UsersPage() {
         setModalOpen(true);
     };
 
-    // Close modal
     const handleClose = () => {
         setModalOpen(false);
     };
 
-    // Called by UserModal when “Save” (or “Create”) is clicked
     const handleSubmit = async (formData, isNew) => {
         setLoading(true);
         setError("");
@@ -73,7 +71,6 @@ function UsersPage() {
         }
     };
 
-    // (Optional) delete a user from the table
     const handleDelete = async (userId) => {
         if (!window.confirm("Are you sure you want to delete this user?")) return;
         try {
@@ -95,7 +92,7 @@ function UsersPage() {
             <UserTable
                 users={users}
                 onEdit={handleEdit}
-                onDelete={handleDelete}  // if your table supports delete
+                onDelete={handleDelete}
             />
 
             <UserModal
