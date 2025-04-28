@@ -1,4 +1,5 @@
 // src/pages/Users.jsx
+
 import React, { useEffect, useState } from "react";
 import {
     fetchUsers,
@@ -17,15 +18,20 @@ function UsersPage() {
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
 
-    // loadUsers now safely handles either {results:[…]} or plain […]
+    // Load the list on mount and after saves/deletes
     const loadUsers = async () => {
         try {
             const data = await fetchUsers();
-            const list = Array.isArray(data) ? data : data.results ?? [];
+            // Handle both { results: [...] } and [...] formats
+            const list = Array.isArray(data)
+                ? data
+                : Array.isArray(data.results)
+                    ? data.results
+                    : [];
             setUsers(list);
         } catch (err) {
             console.error("Failed to load users:", err);
-            setUsers([]); // ensure we never pass undefined into the table
+            setUsers([]); // avoid undefined
         }
     };
 
@@ -33,13 +39,15 @@ function UsersPage() {
         loadUsers();
     }, []);
 
+    // Open modal to create a new user
     const handleNew = () => {
-        setInitialData({});    // empty = isNew
+        setInitialData({});   // empty → isNew mode
         setError("");
         setSuccess("");
         setModalOpen(true);
     };
 
+    // Open modal to edit an existing user
     const handleEdit = (user) => {
         setInitialData(user);
         setError("");
@@ -47,10 +55,12 @@ function UsersPage() {
         setModalOpen(true);
     };
 
+    // Close modal
     const handleClose = () => {
         setModalOpen(false);
     };
 
+    // Called by UserModal on Save/Create
     const handleSubmit = async (formData, isNew) => {
         setLoading(true);
         setError("");
@@ -71,6 +81,7 @@ function UsersPage() {
         }
     };
 
+    // Optional: delete user
     const handleDelete = async (userId) => {
         if (!window.confirm("Are you sure you want to delete this user?")) return;
         try {
