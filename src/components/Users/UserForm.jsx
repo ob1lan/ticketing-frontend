@@ -13,9 +13,25 @@ const UserForm = ({
     isNew,
 }) => (
     <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Username */}
+        <div className="form-control">
+            <label className="fieldset-label">
+                <span className="label-text">Username</span>
+            </label>
+            <input
+                name="username"
+                type="text"
+                className="input input-bordered w-full"
+                value={user.username}
+                onChange={handleChange}
+                required
+                disabled={loading}
+            />
+        </div>
+
         {/* First Name */}
         <div className="form-control">
-            <label className="label">
+            <label className="fieldset-label">
                 <span className="label-text">First Name</span>
             </label>
             <input
@@ -31,7 +47,7 @@ const UserForm = ({
 
         {/* Last Name */}
         <div className="form-control">
-            <label className="label">
+            <label className="fieldset-label">
                 <span className="label-text">Last Name</span>
             </label>
             <input
@@ -47,7 +63,7 @@ const UserForm = ({
 
         {/* Email */}
         <div className="form-control">
-            <label className="label">
+            <label className="fieldset-label">
                 <span className="label-text">Email</span>
             </label>
             <input
@@ -63,7 +79,7 @@ const UserForm = ({
 
         {/* Role */}
         <div className="form-control">
-            <label className="label">
+            <label className="fieldset-label">
                 <span className="label-text">Role</span>
             </label>
             <select
@@ -73,14 +89,14 @@ const UserForm = ({
                 onChange={handleChange}
                 disabled={loading}
             >
-                <option value="user">User</option>
+                <option value="customer">Customer</option>
                 <option value="admin">Admin</option>
             </select>
         </div>
 
         {/* Company */}
         <div className="form-control">
-            <label className="label">
+            <label className="fieldset-label">
                 <span className="label-text">Company</span>
             </label>
             <select
@@ -102,7 +118,7 @@ const UserForm = ({
         {/* Password (only when creating a new user) */}
         {isNew && (
             <div className="form-control">
-                <label className="label">
+                <label className="fieldset-label">
                     <span className="label-text">Password</span>
                 </label>
                 <input

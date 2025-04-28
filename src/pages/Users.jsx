@@ -74,6 +74,9 @@ function UsersPage() {
                 setSuccess("User updated successfully.");
             }
             await loadUsers();
+            setTimeout(() => {
+                handleClose();
+            }, 1500);
         } catch (err) {
             setError(err.message);
         } finally {
@@ -95,7 +98,7 @@ function UsersPage() {
     return (
         <>
             <div className="divider flex justify-end">
-                <button className="btn btn-primary" onClick={handleNew}>
+                <button className="btn btn-soft btn-primary" onClick={handleNew}>
                     New User
                 </button>
             </div>
