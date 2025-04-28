@@ -1,204 +1,114 @@
-// src/components/Users/UserModal.jsx
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
+import UserForm from "./UserForm";
 
-function UserModal({ user, onClose }) {
-    // formData.company is now just the ID (string) returned from the API
-    const [formData, setFormData] = useState({
+const UserModal = ({
+    isOpen,
+    onClose,
+    onSubmit,
+    initialData = {},
+    loading = false,
+    error = "",
+    success = "",
+}) => {
+    const modalRef = useRef(null);
+    const [user, setUser] = useState({
         first_name: "",
         last_name: "",
         email: "",
         role: "user",
-        company: "",        // <-- holds the company ID as a string
+        company: "",
+        password: "",
     });
     const [companies, setCompanies] = useState([]);
-    const [loadingCompanies, setLoadingCompanies] = useState(false);
-    const [isSaving, setIsSaving] = useState(false);
-    const [error, setError] = useState(null);
 
-    // Seed the form when `user` changes
+    const isNew = !initialData.id;
+
+    // Seed the user state when modal opens or initialData changes
     useEffect(() => {
-        if (user) {
-            setFormData({
-                first_name: user.first_name || "",
-                last_name: user.last_name || "",
-                email: user.email || "",
-                role: user.role || "user",
-                company: user.company ? String(user.company) : "",  // <-- use the raw ID
-            });
+        if (isOpen) {
+            const defaults = {
+                first_name: "",
+                last_name: "",
+                email: "",
+                role: "user",
+                company: "",
+                password: "",
+            };
+            setUser({ ...defaults, ...initialData, password: "" });
+            // Fetch companies once
+            (async () => {
+                try {
+                    const token = localStorage.getItem("accessToken");
+                    const res = await fetch(
+                        `${import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000"}/companies/`,
+                        {
+                            headers: {
+                                "Content-Type": "application/json",
+                                Authorization: `Bearer ${token}`,
+                            },
+                        }
+                    );
+                    if (!res.ok) throw new Error("Unable to load companies");
+                    const data = await res.json();
+                    setCompanies(data.results || data);
+                } catch (e) {
+                    console.error(e);
+                }
+            })();
         }
-    }, [user]);
-
-    // Load the companies so we can both render names in the dropdown...
-    useEffect(() => {
-        if (!user) return;
-        setLoadingCompanies(true);
-        fetch(`${import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000"}/companies/`, {
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-            },
-        })
-            .then((res) => {
-                if (!res.ok) throw new Error("Failed to load companies");
-                return res.json();
-            })
-            .then((data) => {
-                // DRF pagination? use data.results or data
-                setCompanies(data.results || data);
-            })
-            .catch(console.error)
-            .finally(() => setLoadingCompanies(false));
-    }, [user]);
+    }, [isOpen, initialData]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData((f) => ({ ...f, [name]: value }));
+        setUser((u) => ({ ...u, [name]: value }));
     };
 
-    const handleSave = async () => {
-        setError(null);
-        // Basic required-field check
-        if (!formData.first_name || !formData.last_name || !formData.email) {
-            setError("First name, last name, and email are required.");
-            return;
-        }
-
-        setIsSaving(true);
-        try {
-            const res = await fetch(
-                `${import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000"}/accounts/${user.id}/`,
-                {
-                    method: "PATCH",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-                    },
-                    body: JSON.stringify({
-                        ...formData,
-                        company: formData.company || null, // null if no selection
-                    }),
-                }
-            );
-            if (!res.ok) {
-                const body = await res.json().catch(() => ({}));
-                throw new Error(body.detail || "Failed to update user");
-            }
-            onClose();
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setIsSaving(false);
-        }
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        onSubmit(user, isNew);
     };
 
-    if (!user) return null;
+    if (!isOpen) return null;
 
     return (
-        <dialog open className="modal modal-open">
-            <div className="modal-box max-w-md">
-                <h3 className="font-bold text-lg mb-4">Edit User</h3>
-
-                {/* First Name */}
-                <div className="form-control mb-2">
-                    <label className="label"><span className="label-text">First Name</span></label>
-                    <input
-                        name="first_name"
-                        type="text"
-                        className="input input-bordered w-full"
-                        value={formData.first_name}
-                        onChange={handleChange}
+        <dialog ref={modalRef} className="modal modal-open">
+            <button
+                type="button"
+                className="modal-backdrop"
+                onClick={onClose}
+                aria-label="Close modal"
+            />
+            <div className="modal-box w-11/12 max-w-lg">
+                <fieldset className="fieldset bg-base-100 border border-base-300 p-6 rounded-box shadow-md">
+                    <legend className="fieldset-legend">
+                        {isNew ? "Create New User" : "Edit User"}
+                    </legend>
+                    <UserForm
+                        user={user}
+                        companies={companies}
+                        handleChange={handleChange}
+                        handleSubmit={handleSubmit}
+                        onClose={onClose}
+                        loading={loading}
+                        error={error}
+                        success={success}
+                        isNew={isNew}
                     />
-                </div>
-
-                {/* Last Name */}
-                <div className="form-control mb-2">
-                    <label className="label"><span className="label-text">Last Name</span></label>
-                    <input
-                        name="last_name"
-                        type="text"
-                        className="input input-bordered w-full"
-                        value={formData.last_name}
-                        onChange={handleChange}
-                    />
-                </div>
-
-                {/* Email */}
-                <div className="form-control mb-2">
-                    <label className="label"><span className="label-text">Email</span></label>
-                    <input
-                        name="email"
-                        type="email"
-                        className="input input-bordered w-full"
-                        value={formData.email}
-                        onChange={handleChange}
-                    />
-                </div>
-
-                {/* Role */}
-                <div className="form-control mb-2">
-                    <label className="label"><span className="label-text">Role</span></label>
-                    <select
-                        name="role"
-                        className="select select-bordered w-full"
-                        value={formData.role}
-                        onChange={handleChange}
-                    >
-                        <option value="user">User</option>
-                        <option value="admin">Admin</option>
-                    </select>
-                </div>
-
-                {/* Company */}
-                <div className="form-control mb-4">
-                    <label className="label"><span className="label-text">Company</span></label>
-                    <select
-                        name="company"
-                        className="select select-bordered w-full"
-                        value={formData.company}
-                        onChange={handleChange}
-                        disabled={loadingCompanies}
-                    >
-                        <option value="">— Select a company —</option>
-                        {companies.map((c) => (
-                            <option key={c.id} value={String(c.id)}>
-                                {c.name}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-
-                {/* Error */}
-                {error && <p className="text-red-500 mb-2">{error}</p>}
-
-                {/* Actions */}
-                <div className="modal-action">
-                    <button className="btn" onClick={onClose} disabled={isSaving}>
-                        Cancel
-                    </button>
-                    <button
-                        className="btn btn-primary"
-                        onClick={handleSave}
-                        disabled={isSaving}
-                    >
-                        {isSaving ? "Saving…" : "Save"}
-                    </button>
-                </div>
+                </fieldset>
             </div>
         </dialog>
     );
-}
+};
 
 UserModal.propTypes = {
-    user: PropTypes.shape({
-        id: PropTypes.string.isRequired,
-        first_name: PropTypes.string,
-        last_name: PropTypes.string,
-        email: PropTypes.string,
-        role: PropTypes.string,
-        company: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-    }).isRequired,
+    isOpen: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
+    onSubmit: PropTypes.func.isRequired,
+    initialData: PropTypes.object,
+    loading: PropTypes.bool,
+    error: PropTypes.string,
+    success: PropTypes.string,
 };
 
 export default UserModal;

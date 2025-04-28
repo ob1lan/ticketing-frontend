@@ -32,12 +32,17 @@ function UsersPage() {
         loadUsers();
     };
 
+    const handleNew = () => {
+        setSelectedUser({});
+        setIsModalOpen(true);
+    }
+
     return (
         <>
             <div className="divider">
                 <button
                     className="btn btn-soft btn-primary"
-                    onClick={"#"}
+                    onClick={handleNew}
                 >
                     New User
                 </button>
