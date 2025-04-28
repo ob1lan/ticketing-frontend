@@ -5,7 +5,7 @@ import UserForm from "./UserForm";
 const UserModal = ({
     isOpen,
     onClose,
-    onSubmit,
+    onSubmit,       // function (userData, isNew) => void
     initialData = {},
     loading = false,
     error = "",
@@ -24,7 +24,7 @@ const UserModal = ({
 
     const isNew = !initialData.id;
 
-    // Seed the user state when modal opens or initialData changes
+    // Reset form + load companies whenever modal opens
     useEffect(() => {
         if (isOpen) {
             const defaults = {
@@ -36,7 +36,7 @@ const UserModal = ({
                 password: "",
             };
             setUser({ ...defaults, ...initialData, password: "" });
-            // Fetch companies once
+
             (async () => {
                 try {
                     const token = localStorage.getItem("accessToken");
@@ -50,8 +50,8 @@ const UserModal = ({
                         }
                     );
                     if (!res.ok) throw new Error("Unable to load companies");
-                    const data = await res.json();
-                    setCompanies(data.results || data);
+                    const json = await res.json();
+                    setCompanies(json.results || json);
                 } catch (e) {
                     console.error(e);
                 }
@@ -81,7 +81,7 @@ const UserModal = ({
             />
             <div className="modal-box w-11/12 max-w-lg">
                 <fieldset className="fieldset bg-base-100 border border-base-300 p-6 rounded-box shadow-md">
-                    <legend className="fieldset-legend">
+                    <legend className="fieldset-legend text-lg font-bold">
                         {isNew ? "Create New User" : "Edit User"}
                     </legend>
                     <UserForm

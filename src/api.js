@@ -1,3 +1,5 @@
+// src/api.js
+
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const getAuthHeaders = () => {
@@ -43,7 +45,7 @@ const apiRequest = async (
 
     const res = await fetch(`${BASE_URL}${endpoint}`, options);
     if (!res.ok) {
-      const errorData = await res.json();
+      const errorData = await res.json().catch(() => ({}));
       throw new Error(errorData.detail || "API request failed");
     }
 
@@ -54,11 +56,19 @@ const apiRequest = async (
   }
 };
 
-// API Functions using `apiRequest`
-
+// Authentication & Profile
 export const fetchProfile = () => apiRequest("/accounts/profile/");
 export const updateProfile = (profileData) =>
   apiRequest("/accounts/profile/", "PATCH", profileData);
+export const loginUser = (email, password) =>
+  apiRequest("/auth/jwt/create/", "POST", { email, password }, {}, false);
+export const changePassword = (currentPassword, newPassword) =>
+  apiRequest("/auth/users/set_password/", "POST", {
+    current_password: currentPassword,
+    new_password: newPassword,
+  });
+
+// Tickets
 export const fetchTickets = (
   pageOrUrl = 1,
   status = "",
@@ -78,6 +88,25 @@ export const fetchTickets = (
 
   return apiRequest(endpoint);
 };
+export const createTicket = (ticketData) =>
+  apiRequest("/tickets/", "POST", ticketData);
+export const updateTicket = (ticketId, updatedData) =>
+  apiRequest(`/tickets/${ticketId}/`, "PATCH", updatedData);
+
+export const fetchTicketById = (ticketId) =>
+  apiRequest(`/tickets/${ticketId}/`);
+export const fetchTicketHistory = (ticketId) =>
+  apiRequest(`/tickets/${ticketId}/history/`);
+
+export const fetchTicketComments = (ticketId) =>
+  apiRequest(`/tickets/${ticketId}/comments/`);
+export const postTicketComment = (ticketId, message) =>
+  apiRequest(`/tickets/${ticketId}/comments/`, "POST", { message });
+
+export const fetchTicketTimeEntries = (ticketId) =>
+  apiRequest(`/tickets/${ticketId}/time-entries/`);
+
+// Companies
 export const fetchCompanies = (page = 1) =>
   apiRequest(`/companies/?page=${page}`);
 export const fetchAllCompanies = async () => {
@@ -94,33 +123,18 @@ export const fetchAllCompanies = async () => {
 
   return allResults;
 };
-export const createTicket = (ticketData) =>
-  apiRequest("/tickets/", "POST", ticketData);
-export const changePassword = (currentPassword, newPassword) =>
-  apiRequest("/auth/users/set_password/", "POST", {
-    current_password: currentPassword,
-    new_password: newPassword,
-  });
-export const loginUser = async (email, password) => {
-  return apiRequest("/auth/jwt/create/", "POST", { email, password }, false);
-};
-export const fetchTicketComments = (ticketId) =>
-  apiRequest(`/tickets/${ticketId}/comments/`);
-export const postTicketComment = (ticketId, message) =>
-  apiRequest(`/tickets/${ticketId}/comments/`, "POST", { message });
-export const fetchTicketTimeEntries = (ticketId) =>
-  apiRequest(`/tickets/${ticketId}/time-entries/`);
-export const fetchAssignees = () => apiRequest("/accounts/");
-export const fetchUsers = () => apiRequest("/accounts/");
-export const updateTicket = (ticketId, updatedData) =>
-  apiRequest(`/tickets/${ticketId}/`, "PATCH", updatedData);
-export const fetchTicketById = (ticketId) =>
-  apiRequest(`/tickets/${ticketId}/`);
-export const fetchTicketHistory = (ticketId) =>
-  apiRequest(`/tickets/${ticketId}/history/`);
-export const updateCompany = (companyId, updatedData) =>
-  apiRequest(`/companies/${companyId}/`, "PATCH", updatedData);
 export const createCompany = (companyData) =>
   apiRequest("/companies/", "POST", companyData);
+export const updateCompany = (companyId, updatedData) =>
+  apiRequest(`/companies/${companyId}/`, "PATCH", updatedData);
 export const deleteCompany = (companyId) =>
   apiRequest(`/companies/${companyId}/`, "DELETE");
+
+// Users (Admin)
+export const fetchUsers = () => apiRequest("/accounts/");
+export const createUser = (userData) =>
+  apiRequest("/accounts/", "POST", userData);
+export const updateUser = (userId, userData) =>
+  apiRequest(`/accounts/${userId}/`, "PATCH", userData);
+export const deleteUser = (userId) =>
+  apiRequest(`/accounts/${userId}/`, "DELETE");
