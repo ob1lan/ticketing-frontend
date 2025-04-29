@@ -131,7 +131,12 @@ export const deleteCompany = (companyId) =>
   apiRequest(`/companies/${companyId}/`, "DELETE");
 
 // Users (Admin)
-export const fetchUsers = () => apiRequest("/accounts/");
+export const fetchUsers = (pageOrUrl = 1) => {
+  // Accept either a page number or a full “next/previous” URL
+  const endpoint =
+    typeof pageOrUrl === "string" ? pageOrUrl : `/accounts/?page=${pageOrUrl}`;
+  return apiRequest(endpoint);
+};
 export const createUser = (userData) =>
   apiRequest("/accounts/", "POST", userData);
 export const updateUser = (userId, userData) =>

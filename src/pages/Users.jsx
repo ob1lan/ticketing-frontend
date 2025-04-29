@@ -1,6 +1,5 @@
 // src/pages/Users.jsx
-
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
     fetchUsers,
     createUser,
@@ -12,111 +11,136 @@ import UserModal from "../components/Users/UserModal";
 
 function UsersPage() {
     const [users, setUsers] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [nextPage, setNextPage] = useState(null);
+    const [prevPage, setPrevPage] = useState(null);
+
     const [modalOpen, setModalOpen] = useState(false);
     const [initialData, setInitialData] = useState({});
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState("");
-    const [success, setSuccess] = useState("");
+    const [modalLoading, setModalLoading] = useState(false);
+    const [modalError, setModalError] = useState("");
+    const [modalSuccess, setModalSuccess] = useState("");
 
-    // Load the list on mount and after saves/deletes
-    const loadUsers = async () => {
+    // ---------- Pagination loader ----------
+    const loadUsers = async (page = 1) => {
         try {
-            const data = await fetchUsers();
-            // Handle both { results: [...] } and [...] formats
-            const list = Array.isArray(data)
-                ? data
-                : Array.isArray(data.results)
-                    ? data.results
-                    : [];
-            setUsers(list);
+            const data = await fetchUsers(page);
+            setUsers(data.results || []);
+            setTotalPages(Math.ceil(data.count / 5));
+            setNextPage(data.next);
+            setPrevPage(data.previous);
         } catch (err) {
-            console.error("Failed to load users:", err);
-            setUsers([]); // avoid undefined
+            console.error("Failed to fetch users", err);
+            setUsers([]);
         }
     };
 
     useEffect(() => {
-        loadUsers();
-    }, []);
+        loadUsers(currentPage);
+    }, [currentPage]);
 
-    // Open modal to create a new user
-    const handleNew = () => {
-        setInitialData({});   // empty → isNew mode
-        setError("");
-        setSuccess("");
+    // ---------- Modal Handlers ----------
+    const openNewModal = () => {
+        setInitialData({});
         setModalOpen(true);
+        setModalError("");
+        setModalSuccess("");
     };
 
-    // Open modal to edit an existing user
-    const handleEdit = (user) => {
+    const openEditModal = (user) => {
         setInitialData(user);
-        setError("");
-        setSuccess("");
         setModalOpen(true);
+        setModalError("");
+        setModalSuccess("");
     };
 
-    // Close modal
-    const handleClose = () => {
+    const closeModal = () => {
         setModalOpen(false);
     };
 
-    // Called by UserModal on Save/Create
-    const handleSubmit = async (formData, isNew) => {
-        setLoading(true);
-        setError("");
-        setSuccess("");
+    const handleModalSubmit = async (formData, isNew) => {
+        setModalLoading(true);
+        setModalError("");
+        setModalSuccess("");
         try {
             if (isNew) {
                 await createUser(formData);
-                setSuccess("User created successfully.");
+                setModalSuccess("User created successfully!");
             } else {
                 await updateUser(formData.id, formData);
-                setSuccess("User updated successfully.");
+                setModalSuccess("User updated successfully!");
             }
-            await loadUsers();
-            setTimeout(() => {
-                handleClose();
-            }, 1500);
+            // Refresh current page and auto-close
+            loadUsers(currentPage);
+            setTimeout(closeModal, 1500);
         } catch (err) {
-            setError(err.message);
+            setModalError(err.message || "Failed to save user.");
         } finally {
-            setLoading(false);
+            setModalLoading(false);
         }
     };
 
-    // Optional: delete user
     const handleDelete = async (userId) => {
-        if (!window.confirm("Are you sure you want to delete this user?")) return;
+        if (!window.confirm("Delete this user?")) return;
         try {
             await deleteUser(userId);
-            await loadUsers();
+            loadUsers(currentPage);
         } catch (err) {
-            console.error("Failed to delete user:", err);
+            console.error("Failed to delete user", err);
         }
     };
 
+    // ---------- Render ----------
     return (
         <>
             <div className="divider flex justify-end">
-                <button className="btn btn-soft btn-primary" onClick={handleNew}>
+                <button className="btn btn-primary" onClick={openNewModal}>
                     New User
                 </button>
             </div>
 
-            <UserTable
-                users={users}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-            />
+            {users.length === 0 ? (
+                <div className="alert alert-warning">
+                    <span>No users found.</span>
+                </div>
+            ) : (
+                <>
+                    <div className="overflow-x-auto max-w-full">
+                        <UserTable users={users} onEdit={openEditModal} onDelete={handleDelete} />
+                    </div>
+
+                    {/* Pagination controls identical to Companies page */}
+                    <div className="join p-2 mt-4 justify-center">
+                        <button
+                            className="join-item btn"
+                            disabled={!prevPage}
+                            onClick={() => setCurrentPage(currentPage - 1)}
+                        >
+                            «
+                        </button>
+                        <span className="join-item btn">
+                            Page {currentPage} of {totalPages}
+                        </span>
+                        <button
+                            className="join-item btn"
+                            disabled={!nextPage}
+                            onClick={() => setCurrentPage(currentPage + 1)}
+                        >
+                            »
+                        </button>
+                    </div>
+                </>
+            )}
 
             <UserModal
                 isOpen={modalOpen}
+                onClose={closeModal}
+                onSubmit={handleModalSubmit}
                 initialData={initialData}
-                onClose={handleClose}
-                onSubmit={handleSubmit}
-                loading={loading}
-                error={error}
-                success={success}
+                loading={modalLoading}
+                error={modalError}
+                success={modalSuccess}
             />
         </>
     );
