@@ -1,11 +1,9 @@
-// src/components/Tickets/CreateTicketFields.jsx
 import React, { useEffect } from "react";
 import PropTypes from "prop-types";
 import useQuill from "../../hooks/useQuill";
 import { TICKET_PRIORITIES, TICKET_TYPES } from "../../utils/constants";
 
 const CreateTicketFields = ({ user, companies, formData, onChange }) => {
-  /* ---------- Quill ---------- */
   const { containerRef, quill } = useQuill(formData.description || "");
 
   useEffect(() => {
@@ -16,10 +14,8 @@ const CreateTicketFields = ({ user, companies, formData, onChange }) => {
     return () => {
       q.off("text-change", handler);
     };
-  }, [quill.current]);   // depend on actual instance only
+  }, [quill.current]);
 
-
-  /* ---------- JSX ---------- */
   return (
     <>
       {user.role === "admin" && (
@@ -53,7 +49,7 @@ const CreateTicketFields = ({ user, companies, formData, onChange }) => {
 
       {/* Quill description */}
       <div className="form-control">
-        <label className="fieldset-label">Description</label>
+        <label className="fieldset-label" htmlFor="Description">Description</label>
         <div
           ref={containerRef}
           className="min-h-[150px] bg-base-100 border border-base-300 rounded p-2"
