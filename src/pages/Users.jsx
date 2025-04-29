@@ -95,7 +95,7 @@ function UsersPage() {
     return (
         <>
             <div className="divider flex justify-end">
-                <button className="btn btn-primary" onClick={openNewModal}>
+                <button className="btn btn-primary btn-soft" onClick={openNewModal}>
                     New User
                 </button>
             </div>
