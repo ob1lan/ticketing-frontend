@@ -2,6 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { ErrorBoundary } from 'react-error-boundary';
 import './index.css';
+import "quill/dist/quill.snow.css";
 import App from './App.jsx';
 import ErrorFallback from './components/ErrorFallback/ErrorFallback';
 
