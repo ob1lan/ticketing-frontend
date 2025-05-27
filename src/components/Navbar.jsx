@@ -23,7 +23,8 @@ function Navbar({ user, profile, onOpenProfile, onOpenSettings }) {
             <li><a href="/dashboard">Tickets</a></li>
             <li><a href="/companies">Companies</a></li>
             <li><a href="/users">Users</a></li>
-            <li><a href="/#">About</a></li>
+            <li><a href="/system">System</a></li>
+            <li><a href="/about">About</a></li>
           </ul>
         </div>
       </div>
