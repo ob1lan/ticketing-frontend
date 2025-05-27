@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { fetchAllCompanies, createTicket } from "../../api";
 import CreateTicketForm from "./CreateTicketForm";
 import PropTypes from "prop-types";
@@ -9,7 +9,7 @@ const CreateTicketModal = ({ isOpen, onClose, onTicketCreated, user }) => {
         title: "",
         description: "",
         priority: "low",
-        type: "incident",
+        type: "service_request",
         company: "",
     });
     const [companies, setCompanies] = useState([]);
