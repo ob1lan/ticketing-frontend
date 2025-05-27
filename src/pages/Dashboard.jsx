@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ProfileModal from "../components/ProfileModal";
 import SettingsModal from "../components/SettingsModal";
@@ -200,7 +200,6 @@ function Dashboard() {
           </svg>
           <div>
             <h3 className="font-bold">No ticket found!</h3>
-            <div className="text-xs">Make sure you created a company first, then create a new ticket.</div>
           </div>
         </div>
       )}

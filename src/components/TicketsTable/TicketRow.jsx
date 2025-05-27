@@ -1,4 +1,3 @@
-import React from "react";
 import PropTypes from "prop-types";
 import { STATUS_LABELS, STATUS_BADGES, TICKET_PRIORITIES, TICKET_TYPES, TICKET_PRIORITY_CLASSES, TICKET_TYPE_BADGE_CLASSES } from "../../utils/constants";
 
