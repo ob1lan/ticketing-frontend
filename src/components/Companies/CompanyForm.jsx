@@ -14,7 +14,7 @@ const CompanyForm = ({
 }) => (
     <form onSubmit={handleSubmit} className="space-y-4">
         <div className="form-control flex flex-col items-center">
-            <div className="avatar avatar-online mb-3">
+            <div className="avatar mb-3">
                 <div className="ring-primary ring-offset-base-100 w-24 rounded-full ring ring-offset-2">
                     <img src={logoPreview} alt="Company Logo" />
                 </div>
